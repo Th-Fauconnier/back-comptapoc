@@ -6,7 +6,10 @@ import lombok.Data;
 public class OperationDto {
 
     private Long id;
+
     private int amount;
 
-    private FinancialAccountDto account;
+    private FinancialAccountDto financialAccount;
+
+    private AccountingEntryDto accountingEntry;
 }
