@@ -7,7 +7,7 @@ import org.mapstruct.Mapper;
 @Mapper
 public interface IOperationMapper {
 
-    Operation convertToOperation(OperationDto operationDto);
+    Operation convertToOperation( OperationDto operationDto );
 
-    OperationDto convertToOperationDto(Operation operation);
+    OperationDto convertToOperationDto( Operation operation );
 }
