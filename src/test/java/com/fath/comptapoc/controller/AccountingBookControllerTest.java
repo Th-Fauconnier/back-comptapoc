@@ -1,13 +1,14 @@
 package com.fath.comptapoc.controller;
 
 import static org.awaitility.Awaitility.given;
+import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fath.comptapoc.model.entities.AccountingBook;
-import com.fath.comptapoc.model.entities.Operation;
 import com.fath.comptapoc.services.impl.AccountingBookServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.List;
 import java.util.Optional;
 
 @WebMvcTest(controllers = AccountingBookController.class )
@@ -60,5 +62,16 @@ public class AccountingBookControllerTest {
         //then
         mockMvc.perform( get( "/accountBook/14") )
                 .andExpect( status().isFound() );
+    }
+
+    @Test
+    public void getAllAccountingBook() throws Exception {
+        //when
+        when( accountingBookService.getAllAccountingBooks() )
+                .thenReturn( List.of( accountingBook, accountingBook ));
+        //then
+        mockMvc.perform( get("/accountBook/all") )
+                .andExpect( status().isOk() )
+                .andExpect( jsonPath("$", hasSize(2) ) );
     }
 }

@@ -36,4 +36,12 @@ public class AccountingBookController {
             );
         }
     }
+
+    @GetMapping("/all")
+    public ResponseEntity<?> getAllAccountingBooks() {
+        return new ResponseEntity<>(
+                accountingBookService.getAllAccountingBooks(),
+                HttpStatus.OK
+        );
+    }
 }
