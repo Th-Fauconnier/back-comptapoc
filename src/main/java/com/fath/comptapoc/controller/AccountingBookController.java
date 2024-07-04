@@ -1,16 +1,11 @@
 package com.fath.comptapoc.controller;
 
-import com.fath.comptapoc.model.entities.AccountingBook;
+import com.fath.comptapoc.model.dtos.AccountingBookDto;
 import com.fath.comptapoc.services.impl.AccountingBookServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.Optional;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping( path = "accountBook")
@@ -26,14 +21,14 @@ public class AccountingBookController {
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getAccountingBookById(@PathVariable Long id){
-        Optional<AccountingBook> optionalAccountingBook = accountingBookService.getAccountingBookById( id );
-        if( optionalAccountingBook.isEmpty() ){
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND );
-        } else {
+        try{
+            AccountingBookDto accountingBookDto = accountingBookService.getAccountingBookById( id );
             return new ResponseEntity<>(
-                    optionalAccountingBook.get(),
+                    accountingBookDto,
                     HttpStatus.FOUND
             );
+        } catch (ClassNotFoundException e) {
+            return new ResponseEntity<>( e.getMessage(), HttpStatus.NOT_FOUND );
         }
     }
 
@@ -42,6 +37,16 @@ public class AccountingBookController {
         return new ResponseEntity<>(
                 accountingBookService.getAllAccountingBooks(),
                 HttpStatus.OK
+        );
+    }
+
+    @PostMapping("/create")
+    public ResponseEntity<?> createAccountingBook( @RequestBody AccountingBookDto accountingBookDto ) {
+        AccountingBookDto accountingBookRegistred = accountingBookService.saveAccountingBook( accountingBookDto );
+
+        return new ResponseEntity<>(
+                accountingBookRegistred,
+                HttpStatus.CREATED
         );
     }
 }
