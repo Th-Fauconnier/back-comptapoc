@@ -6,7 +6,7 @@ import org.mapstruct.Mapper;
 
 import java.util.Set;
 
-@Mapper
+@Mapper(componentModel = "spring")
 public interface IAccountingBookMapper {
 
     AccountingBook convertToAccountingBook( AccountingBookDto accountingBookDto );
