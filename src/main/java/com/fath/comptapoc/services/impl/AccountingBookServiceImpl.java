@@ -6,9 +6,11 @@ import com.fath.comptapoc.model.mappers.IAccountingBookMapper;
 import com.fath.comptapoc.repository.AccountingBookRepository;
 import com.fath.comptapoc.services.contracts.IAccountingBookService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+@Service
 public class AccountingBookServiceImpl implements IAccountingBookService {
 
     @Autowired
