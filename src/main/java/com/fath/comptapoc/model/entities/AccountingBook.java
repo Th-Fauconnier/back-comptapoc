@@ -14,6 +14,8 @@ public class AccountingBook {
     @GeneratedValue
     private Long id;
 
+
+    @Column(nullable = false)
     private String name;
 
     @OneToMany(mappedBy = "accountingBook")
