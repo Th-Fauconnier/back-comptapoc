@@ -1,6 +1,7 @@
 package com.fath.comptapoc.model.entities;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 import java.util.Set;
@@ -14,6 +15,7 @@ public class AccountingBook {
     @GeneratedValue
     private Long id;
 
+    @NotBlank(message = "Name is mandatory")
     private String name;
 
     @OneToMany(mappedBy = "accountingBook")
