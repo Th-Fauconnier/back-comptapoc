@@ -4,16 +4,18 @@ import com.fath.comptapoc.model.entities.AccountingBook;
 import com.fath.comptapoc.repository.AccountingBookRepository;
 import com.fath.comptapoc.services.contracts.IAccountingBookService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+@Service
 public class AccountingBookServiceImpl implements IAccountingBookService {
 
     @Autowired
     private AccountingBookRepository accountingBookRepository;
 
-    public Optional<AccountingBook> getAccountingBookById(final Long id){
-        return accountingBookRepository.findById( id );
+    public Optional<AccountingBook> getAccountingBookById(final Long id) {
+       return accountingBookRepository.findById( id );
     }
 
     public Iterable<AccountingBook> getAllAccountingBooks(){
