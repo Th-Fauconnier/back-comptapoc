@@ -74,4 +74,12 @@ public class AccountingBookControllerTest {
                 .andExpect( status().isOk() )
                 .andExpect( jsonPath("$", hasSize(2) ) );
     }
+
+    @Test
+    public void saveAccountingBook() throws Exception {
+        when( accountingBookService.saveAccountingBook( accountingBook ) )
+                .thenReturn( accountingBook );
+
+        //todo
+    }
 }
