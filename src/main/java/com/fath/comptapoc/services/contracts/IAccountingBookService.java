@@ -1,16 +1,14 @@
 package com.fath.comptapoc.services.contracts;
 
-import com.fath.comptapoc.model.entities.AccountingBook;
-
-import java.util.Optional;
+import com.fath.comptapoc.model.dtos.AccountingBookDto;
 
 public interface IAccountingBookService {
 
-    Optional<AccountingBook> getAccountingBookById(final Long id);
+    AccountingBookDto getAccountingBookById(final Long id) throws ClassNotFoundException;
 
-    Iterable<AccountingBook> getAllAccountingBooks();
+    Iterable<AccountingBookDto> getAllAccountingBooks();
 
     void deleteAccountingBook( final Long id);
 
-    AccountingBook saveAccountingBook( AccountingBook accountingBook );
+    AccountingBookDto saveAccountingBook( AccountingBookDto accountingBookDto );
 }
