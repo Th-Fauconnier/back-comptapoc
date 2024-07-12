@@ -1,10 +1,10 @@
 package com.fath.comptapoc.service;
 
+import com.fath.comptapoc.model.dtos.AccountingBookDto;
 import com.fath.comptapoc.model.entities.AccountingBook;
 import com.fath.comptapoc.model.mappers.IAccountingBookMapper;
 import com.fath.comptapoc.repository.AccountingBookRepository;
 import com.fath.comptapoc.services.impl.AccountingBookServiceImpl;
-import org.apache.coyote.BadRequestException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -35,31 +35,36 @@ public class AccountingBookServiceTest {
     @Mock
     private AccountingBook accountingBook;
 
+    @Mock
+    private AccountingBookDto accountingBookDto;
+
     @Test
-    void test_GetAccountingBookById_whenOptionalIsEmpty(){
+    void test_GetAccountingBookById_whenNotFound(){
         //when
         when( accountingBookRepository.findById( anyLong() ) )
                 .thenReturn(Optional.empty() );
         //then
         try{
-            Optional<AccountingBook> optionalAccountingBook = accountingBookService.getAccountingBookById( anyLong() );
+            accountingBookService.getAccountingBookById( anyLong() );
+            fail("NotFound Exception expected not throwing");
 
-            assertThat( optionalAccountingBook ).isEmpty();
-        } catch(Exception e) {
-            fail( e.getMessage() );
+        } catch (Exception e) {
+            assertThat( e.getMessage() ).isEqualTo( "AccountingBook not found" );
         }
     }
 
     @Test
-    void test_GetAccountingBookById_whenOptionalIsNotEmpty() {
+    void test_GetAccountingBookById_whenFoundIt() {
         //when
-        when(accountingBookRepository.findById( anyLong() ) )
+        when( accountingBook.getId() )
+                .thenReturn( 21L );
+        when( accountingBookRepository.findById( anyLong() ) )
                 .thenReturn(Optional.of( accountingBook ) );
         //then
         try {
-            Optional<AccountingBook> optionalAccountingBook = accountingBookService.getAccountingBookById( anyLong() );
-
-            assertThat( optionalAccountingBook ).isPresent();
+            //todo
+            accountingBookService.getAccountingBookById( anyLong() );
+            assertThat( accountingBook.getId() ).isEqualTo( 21L );
 
         } catch (Exception e) {
             fail(e.getMessage());
@@ -86,7 +91,6 @@ public class AccountingBookServiceTest {
 
     @Test
     void test_GetAllAccountingBook_whenNotEmptyList(){
-        //TODO
         //when
         when( accountingBookRepository.findAll() )
                 .thenReturn(
@@ -110,8 +114,6 @@ public class AccountingBookServiceTest {
 
     @Test
     void test_DeleteAccountingBook(){
-        //TODO
-
         //then
         try{
             accountingBookService.deleteAccountingBook( anyLong() );
@@ -123,21 +125,19 @@ public class AccountingBookServiceTest {
 
     @Test
     void test_SaveAccountingBook__whenUnvalidAccountingBook(){
-        //TODO
-
         //then
         try{
-            accountingBookService.saveAccountingBook( accountingBook );
+            accountingBookService.saveAccountingBook( accountingBookDto );
+            fail( "BadRequest Exception expected not throwing" );
         } catch (Exception e ){
-            System.out.println("rdrdrdr");
             assertThat( e.getMessage() ).isEqualTo( "Name is mandatory" );
-          //  fail( e.getMessage() );
         }
     }
 
     @Test
     void test_SaveAccountingBook__whenValidAccountingBook(){
         //TODO
+        fail( " the Test isn't implemented ");
 
         //then
         try{
