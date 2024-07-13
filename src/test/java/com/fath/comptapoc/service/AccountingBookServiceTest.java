@@ -13,13 +13,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.util.Optional;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.any;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.mock;
@@ -160,12 +158,12 @@ public class AccountingBookServiceTest {
 
     @Test
     void test_SaveAccountingBook__whenValidAccountingBook(){
-        //TODO
-        fail( " the Test isn't implemented ");
 
-        //then
         try{
+            //when
+            accountingBookService.saveAccountingBook( accountingBookDto );
 
+            //when
         } catch (Exception e ){
             fail( e.getMessage() );
         }
