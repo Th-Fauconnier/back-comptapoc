@@ -58,7 +58,7 @@ public class AccountingBookServiceImpl implements IAccountingBookService {
 
     /**
      *
-     * @param AccountingBookDto
+     * @param accountingBookDto as bean to check
      * @throws ConstraintViolationException
      * if the accountingBookDto isn't a valid bean, a ConstraintViolation will be threw
      * constraints are define in the accountingBookDto bean
