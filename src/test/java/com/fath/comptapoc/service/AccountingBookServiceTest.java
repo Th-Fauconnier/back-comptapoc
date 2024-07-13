@@ -5,16 +5,21 @@ import com.fath.comptapoc.model.entities.AccountingBook;
 import com.fath.comptapoc.model.mappers.IAccountingBookMapper;
 import com.fath.comptapoc.repository.AccountingBookRepository;
 import com.fath.comptapoc.services.impl.AccountingBookServiceImpl;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Validator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.util.Optional;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.any;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.mock;
@@ -25,6 +30,9 @@ public class AccountingBookServiceTest {
 
     @InjectMocks
     AccountingBookServiceImpl accountingBookService;
+
+    @Mock
+    private Validator validator;
 
     @Mock
     private AccountingBookRepository accountingBookRepository;
@@ -62,7 +70,6 @@ public class AccountingBookServiceTest {
                 .thenReturn(Optional.of( accountingBook ) );
         //then
         try {
-            //todo
             accountingBookService.getAccountingBookById( anyLong() );
             assertThat( accountingBook.getId() ).isEqualTo( 21L );
 
@@ -73,7 +80,6 @@ public class AccountingBookServiceTest {
 
     @Test
     void test_GetAllAccountingBook_whenEmptyList(){
-        //TODO
         //when
         when( accountingBookRepository.findAll() )
                 .thenReturn( Set.of( ) );
@@ -125,12 +131,30 @@ public class AccountingBookServiceTest {
 
     @Test
     void test_SaveAccountingBook__whenUnvalidAccountingBook(){
-        //then
+
+        //given
+        ConstraintViolation nameConstraintViolationMock = mock(  ConstraintViolation.class );
+        when( nameConstraintViolationMock.getMessage() ).thenReturn( "Name is mandatory" );
+
+        when( validator.validate(  accountingBookDto ) )
+                .thenReturn(
+                        Set.of(
+                                nameConstraintViolationMock
+                        )
+                );
+
         try{
+            //when
             accountingBookService.saveAccountingBook( accountingBookDto );
-            fail( "BadRequest Exception expected not throwing" );
-        } catch (Exception e ){
-            assertThat( e.getMessage() ).isEqualTo( "Name is mandatory" );
+
+            //then
+            fail( "ConstraintViolationException expected not throwing" );
+        } catch ( ConstraintViolationException e ){
+            assertThat( e.getMessage() ).isEqualTo( "Error occurred: Name is mandatory" );
+        } catch ( Exception e )
+        {
+            System.out.println( e.getMessage() );
+            fail( "Unespected error");
         }
     }
 

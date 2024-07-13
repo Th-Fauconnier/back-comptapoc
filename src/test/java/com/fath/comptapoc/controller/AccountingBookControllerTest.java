@@ -117,4 +117,22 @@ public class AccountingBookControllerTest {
             .andExpect( jsonPath("$.id").value( 14L ) )
             .andExpect( jsonPath("$.name").value("test_name") );
     }
+
+    @Test
+    public void createAccountingBook_whenBadRequest() throws Exception {
+
+        when( accountingBookDto.getName() ).thenReturn(null);
+
+        when( accountingBookService.saveAccountingBook( ArgumentMatchers.any( AccountingBookDto.class ) ) ).thenReturn( accountingBookDto );
+
+        //then
+        ResultActions r = mockMvc.perform(
+                        post("/accountBook/create")
+                                .content( new ObjectMapper().writeValueAsString( accountingBookDto ) )
+                                .contentType( MediaType.APPLICATION_JSON )
+                                .accept( MediaType.APPLICATION_JSON )
+                )
+                .andExpect( status().isBadRequest() );
+            //    .andExpect( jsonPath("$.message").value("Invalid request content") );
+    }
 }
