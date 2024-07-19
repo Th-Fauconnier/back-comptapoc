@@ -26,34 +26,28 @@ public class AccountingBookServiceImpl implements IAccountingBookService {
     @Autowired
     private IAccountingBookMapper accountingBookMapper;
 
-    public AccountingBookDto getAccountingBookById(final Long id) throws ClassNotFoundException {
+    public AccountingBook getAccountingBookById(final Long id) throws ClassNotFoundException {
         Optional< AccountingBook > optionalAccountingBook = accountingBookRepository.findById( id );
         if( optionalAccountingBook.isEmpty() ) {
             throw new ClassNotFoundException( "AccountingBook not found" );
         }else {
-            return accountingBookMapper.convertToAccountingBookDto( optionalAccountingBook.get() );
+            return optionalAccountingBook.get();
         }
     }
 
-    public Iterable<AccountingBookDto> getAllAccountingBooks(){
-        return accountingBookMapper.mapToSetOfAccountingBookDto(
-                accountingBookRepository.findAll()
-        );
+    public Iterable<AccountingBook> getAllAccountingBooks(){
+        return accountingBookRepository.findAll();
     }
 
     public void deleteAccountingBook( final Long id) {
         accountingBookRepository.deleteById( id );
     }
 
-    public AccountingBookDto saveAccountingBook( AccountingBookDto accountingBook ) throws ConstraintViolationException {
+    public AccountingBook saveAccountingBook( AccountingBook accountingBook ) throws ConstraintViolationException {
 
-        isAccountingBookDtoValid( accountingBook );
+        isAccountingBookValid( accountingBook );
 
-        return accountingBookMapper.convertToAccountingBookDto(
-                accountingBookRepository.save(
-                        accountingBookMapper.convertToAccountingBook( accountingBook )
-                )
-        );
+        return accountingBookRepository.save( accountingBook  );
     }
 
     /**
@@ -69,6 +63,25 @@ public class AccountingBookServiceImpl implements IAccountingBookService {
         if (!violations.isEmpty()) {
             StringBuilder sb = new StringBuilder();
             for (ConstraintViolation<AccountingBookDto> constraintViolation : violations) {
+                sb.append( constraintViolation.getMessage() );
+            }
+            throw new ConstraintViolationException("Error occurred: " + sb.toString(), violations);
+        }
+    }
+
+    /**
+     *
+     * @param accountingBook as bean to check
+     * @throws ConstraintViolationException
+     * if the accountingBook isn't a valid bean, a ConstraintViolation will be threw
+     * constraints are define in the accountingBook bean
+     */
+    private void isAccountingBookValid( AccountingBook accountingBook ) throws ConstraintViolationException {
+        Set<ConstraintViolation<AccountingBook>> violations = validator.validate( accountingBook );
+
+        if (!violations.isEmpty()) {
+            StringBuilder sb = new StringBuilder();
+            for (ConstraintViolation<AccountingBook> constraintViolation : violations) {
                 sb.append( constraintViolation.getMessage() );
             }
             throw new ConstraintViolationException("Error occurred: " + sb.toString(), violations);

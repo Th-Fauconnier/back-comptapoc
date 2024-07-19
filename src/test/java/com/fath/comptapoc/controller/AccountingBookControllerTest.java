@@ -10,6 +10,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fath.comptapoc.model.dtos.AccountingBookDto;
+import com.fath.comptapoc.model.entities.AccountingBook;
 import com.fath.comptapoc.services.impl.AccountingBookServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
@@ -20,9 +21,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
-import java.util.List;
+import java.util.Set;
 
-@WebMvcTest(controllers = AccountingBookController.class )
+@WebMvcTest(AccountingBookController.class )
 public class AccountingBookControllerTest {
 
     @Autowired
@@ -33,6 +34,9 @@ public class AccountingBookControllerTest {
 
     @MockBean
     private AccountingBookDto accountingBookDto;
+
+    @MockBean
+    private AccountingBook accountingBook;
 
     @Test
     public void testBadRoute() throws Exception {
@@ -61,7 +65,7 @@ public class AccountingBookControllerTest {
     public void getAccountingBookById_whenIsFound() throws  Exception {
         //when
         when( accountingBookService.getAccountingBookById( anyLong() ) )
-                .thenReturn( accountingBookDto );
+                .thenReturn( accountingBook );
 
         //then
         mockMvc.perform( get( "/accountBook/14") )
@@ -72,7 +76,7 @@ public class AccountingBookControllerTest {
     public void getAllAccountingBook_whenBooksFound() throws Exception {
         //when
         when( accountingBookService.getAllAccountingBooks() )
-                .thenReturn( List.of( accountingBookDto, accountingBookDto ));
+                .thenReturn( Set.of( accountingBook, accountingBook ));
         //then
         mockMvc.perform( get("/accountBook/all") )
                 .andExpect( status().isOk() )
@@ -81,8 +85,8 @@ public class AccountingBookControllerTest {
 
     @Test
     public void saveAccountingBook() throws Exception {
-        when( accountingBookService.saveAccountingBook( accountingBookDto ) )
-                .thenReturn( accountingBookDto );
+        when( accountingBookService.saveAccountingBook( accountingBook ) )
+                .thenReturn( accountingBook );
 
         //todo
     }
@@ -91,7 +95,7 @@ public class AccountingBookControllerTest {
     public void getAllAccountingBook_whenNoBooksFound() throws Exception {
         //when
         when( accountingBookService.getAllAccountingBooks() )
-                .thenReturn( List.of());
+                .thenReturn( Set.of());
         //then
         mockMvc.perform( get("/accountBook/all") )
                 .andExpect( status().isOk() )
@@ -103,8 +107,10 @@ public class AccountingBookControllerTest {
 
         when( accountingBookDto.getName() ).thenReturn("test_name");
         when( accountingBookDto.getId() ).thenReturn(14L );
+        when( accountingBook.getName() ).thenReturn("test_name");
+        when( accountingBook.getId() ).thenReturn(14L );
 
-        when( accountingBookService.saveAccountingBook( ArgumentMatchers.any( AccountingBookDto.class ) ) ).thenReturn( accountingBookDto );
+        when( accountingBookService.saveAccountingBook( ArgumentMatchers.any( AccountingBook.class ) ) ).thenReturn( accountingBook );
 
         //then
         ResultActions r = mockMvc.perform(
@@ -123,7 +129,7 @@ public class AccountingBookControllerTest {
 
         when( accountingBookDto.getName() ).thenReturn(null);
 
-        when( accountingBookService.saveAccountingBook( ArgumentMatchers.any( AccountingBookDto.class ) ) ).thenReturn( accountingBookDto );
+        when( accountingBookService.saveAccountingBook( ArgumentMatchers.any( AccountingBook.class ) ) ).thenReturn( accountingBook );
 
         //then
         ResultActions r = mockMvc.perform(

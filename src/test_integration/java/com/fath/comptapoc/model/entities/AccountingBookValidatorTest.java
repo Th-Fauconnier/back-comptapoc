@@ -1,4 +1,4 @@
-package com.fath.comptapoc.entities;
+package com.fath.comptapoc.model.entities;
 
 import com.fath.comptapoc.model.entities.AccountingBook;
 import jakarta.validation.ConstraintViolation;

@@ -24,7 +24,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class AccountingBookServiceTest {
+public class AccountingBookServiceImplTest {
 
     @InjectMocks
     AccountingBookServiceImpl accountingBookService;
@@ -45,7 +45,7 @@ public class AccountingBookServiceTest {
     private AccountingBookDto accountingBookDto;
 
     @Test
-    void test_GetAccountingBookById_whenNotFound(){
+    void getAccountingBookById_whenNotFound(){
         //when
         when( accountingBookRepository.findById( anyLong() ) )
                 .thenReturn(Optional.empty() );
@@ -60,7 +60,7 @@ public class AccountingBookServiceTest {
     }
 
     @Test
-    void test_GetAccountingBookById_whenFoundIt() {
+    void getAccountingBookById_whenFoundIt() {
         //when
         when( accountingBook.getId() )
                 .thenReturn( 21L );
@@ -77,7 +77,7 @@ public class AccountingBookServiceTest {
     }
 
     @Test
-    void test_GetAllAccountingBook_whenEmptyList(){
+    void getAllAccountingBook_whenEmptyList(){
         //when
         when( accountingBookRepository.findAll() )
                 .thenReturn( Set.of( ) );
@@ -94,7 +94,7 @@ public class AccountingBookServiceTest {
     }
 
     @Test
-    void test_GetAllAccountingBook_whenNotEmptyList(){
+    void getAllAccountingBook_whenNotEmptyList(){
         //when
         when( accountingBookRepository.findAll() )
                 .thenReturn(
@@ -117,7 +117,7 @@ public class AccountingBookServiceTest {
     }
 
     @Test
-    void test_DeleteAccountingBook(){
+    void deleteAccountingBook(){
         //then
         try{
             accountingBookService.deleteAccountingBook( anyLong() );
@@ -128,13 +128,13 @@ public class AccountingBookServiceTest {
     }
 
     @Test
-    void test_SaveAccountingBook__whenUnvalidAccountingBook(){
+    void saveAccountingBook__whenUnvalidAccountingBook(){
 
         //given
         ConstraintViolation nameConstraintViolationMock = mock(  ConstraintViolation.class );
         when( nameConstraintViolationMock.getMessage() ).thenReturn( "Name is mandatory" );
 
-        when( validator.validate(  accountingBookDto ) )
+        when( validator.validate(  accountingBook ) )
                 .thenReturn(
                         Set.of(
                                 nameConstraintViolationMock
@@ -143,7 +143,7 @@ public class AccountingBookServiceTest {
 
         try{
             //when
-            accountingBookService.saveAccountingBook( accountingBookDto );
+            accountingBookService.saveAccountingBook( accountingBook );
 
             //then
             fail( "ConstraintViolationException expected not throwing" );
@@ -157,11 +157,11 @@ public class AccountingBookServiceTest {
     }
 
     @Test
-    void test_SaveAccountingBook__whenValidAccountingBook(){
+    void saveAccountingBook__whenValidAccountingBook(){
 
         try{
             //when
-            accountingBookService.saveAccountingBook( accountingBookDto );
+            accountingBookService.saveAccountingBook( accountingBook );
 
             //when
         } catch (Exception e ){
