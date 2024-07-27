@@ -2,7 +2,6 @@ package com.fath.comptapoc.services.impl;
 
 import com.fath.comptapoc.model.dtos.AccountingBookDto;
 import com.fath.comptapoc.model.entities.AccountingBook;
-import com.fath.comptapoc.model.mappers.IAccountingBookMapper;
 import com.fath.comptapoc.repository.AccountingBookRepository;
 import com.fath.comptapoc.services.contracts.IAccountingBookService;
 import jakarta.validation.ConstraintViolation;
@@ -23,9 +22,6 @@ public class AccountingBookServiceImpl implements IAccountingBookService {
     @Autowired
     private AccountingBookRepository accountingBookRepository;
 
-    @Autowired
-    private IAccountingBookMapper accountingBookMapper;
-
     public AccountingBook getAccountingBookById(final Long id) throws ClassNotFoundException {
         Optional< AccountingBook > optionalAccountingBook = accountingBookRepository.findById( id );
         if( optionalAccountingBook.isEmpty() ) {
@@ -35,7 +31,7 @@ public class AccountingBookServiceImpl implements IAccountingBookService {
         }
     }
 
-    public Iterable<AccountingBook> getAllAccountingBooks(){
+    public Set<AccountingBook> getAllAccountingBooks(){
         return accountingBookRepository.findAll();
     }
 
