@@ -109,7 +109,6 @@ public class AccountingBookServiceIT {
 
             accountingBooks.forEach( ac -> accountingService.saveAccountingBook( ac ));
 
-            //todo
             Set<AccountingBook> accountingBooksFromBdd = accountingService.getAllAccountingBooks();
 
             assertEquals( accountingBooksFromBdd.size(), 3);
