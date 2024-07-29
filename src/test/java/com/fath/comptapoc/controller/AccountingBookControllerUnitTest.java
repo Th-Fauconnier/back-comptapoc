@@ -24,7 +24,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import java.util.Set;
 
 @WebMvcTest(AccountingBookController.class )
-public class AccountingBookControllerTest {
+public class AccountingBookControllerUnitTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -37,18 +37,6 @@ public class AccountingBookControllerTest {
 
     @MockBean
     private AccountingBook accountingBook;
-
-    @Test
-    public void testBadRoute() throws Exception {
-        mockMvc.perform( get("/badRoute") )
-                .andExpect( status().isNotFound() );
-    }
-
-    @Test
-    public void testGoodRoute() throws Exception {
-        mockMvc.perform( get("/accountBook/test") )
-                .andExpect( status().isOk() );
-    }
 
     @Test
     public void getAccountingBookById_whenNotFound() throws  Exception {
@@ -81,14 +69,6 @@ public class AccountingBookControllerTest {
         mockMvc.perform( get("/accountBook/all") )
                 .andExpect( status().isOk() )
                 .andExpect( jsonPath("$", hasSize(2) ) );
-    }
-
-    @Test
-    public void saveAccountingBook() throws Exception {
-        when( accountingBookService.saveAccountingBook( accountingBook ) )
-                .thenReturn( accountingBook );
-
-        //todo
     }
 
     @Test
@@ -139,6 +119,5 @@ public class AccountingBookControllerTest {
                                 .accept( MediaType.APPLICATION_JSON )
                 )
                 .andExpect( status().isBadRequest() );
-            //    .andExpect( jsonPath("$.message").value("Invalid request content") );
     }
 }

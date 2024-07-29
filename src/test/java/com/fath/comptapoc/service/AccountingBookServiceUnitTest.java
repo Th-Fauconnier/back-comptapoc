@@ -1,8 +1,6 @@
 package com.fath.comptapoc.service;
 
-import com.fath.comptapoc.model.dtos.AccountingBookDto;
 import com.fath.comptapoc.model.entities.AccountingBook;
-import com.fath.comptapoc.model.mappers.IAccountingBookMapper;
 import com.fath.comptapoc.repository.AccountingBookRepository;
 import com.fath.comptapoc.services.impl.AccountingBookServiceImpl;
 import jakarta.validation.ConstraintViolation;
@@ -24,7 +22,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class AccountingBookServiceImplTest {
+public class AccountingBookServiceUnitTest {
 
     @InjectMocks
     AccountingBookServiceImpl accountingBookService;
@@ -36,13 +34,7 @@ public class AccountingBookServiceImplTest {
     private AccountingBookRepository accountingBookRepository;
 
     @Mock
-    private IAccountingBookMapper accountingBookMapper;
-
-    @Mock
     private AccountingBook accountingBook;
-
-    @Mock
-    private AccountingBookDto accountingBookDto;
 
     @Test
     void getAccountingBookById_whenNotFound(){
