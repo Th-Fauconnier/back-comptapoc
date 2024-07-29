@@ -2,6 +2,7 @@ package com.fath.comptapoc.controller;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -63,8 +64,14 @@ public class AccountingBookControllerUnitTest {
     @Test
     public void getAllAccountingBook_whenBooksFound() throws Exception {
         //when
+        AccountingBook mockedAccount_1 = mock(AccountingBook.class);
+        when( mockedAccount_1.getName() ).thenReturn( "mockedAccount_1");
+        AccountingBook mockedAccount_2 = mock(AccountingBook.class);
+        when( mockedAccount_2.getName() ).thenReturn( "mockedAccount_2");
+
+        Set< AccountingBook > accountingBookSet = Set.of( mockedAccount_1, mockedAccount_2 );
         when( accountingBookService.getAllAccountingBooks() )
-                .thenReturn( Set.of( accountingBook, accountingBook ));
+                .thenReturn( accountingBookSet );
         //then
         mockMvc.perform( get("/accountBook/all") )
                 .andExpect( status().isOk() )
