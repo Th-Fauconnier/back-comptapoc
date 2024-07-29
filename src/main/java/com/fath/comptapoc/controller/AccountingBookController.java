@@ -27,11 +27,6 @@ public class AccountingBookController {
         this.modelMapper = new ModelMapper();
     }
 
-    @GetMapping("/test")
-    public void getTest(){
-        System.out.println( "IT'S OK !");
-    }
-
     @GetMapping("/{id}")
     public ResponseEntity<?> getAccountingBookById(@PathVariable Long id){
         try{
@@ -55,16 +50,25 @@ public class AccountingBookController {
 
     @GetMapping("/all")
     public ResponseEntity<?> getAllAccountingBooks() {
-        Set< AccountingBookDto > accountingBookDtoSet = new HashSet<>();
-        accountingBookService.getAllAccountingBooks().forEach( accountingBook -> {
-            accountingBookDtoSet.add(
-                    convertToDto( accountingBook )
+        try{
+            Set< AccountingBookDto > accountingBookDtoSet = new HashSet<>();
+
+            accountingBookService.getAllAccountingBooks().forEach( accountingBook -> {
+                accountingBookDtoSet.add(
+                        convertToDto( accountingBook )
+                );
+            });
+
+            return new ResponseEntity<>(
+                    accountingBookDtoSet,
+                    HttpStatus.OK
             );
-        });
-        return new ResponseEntity<>(
-                accountingBookDtoSet,
-                HttpStatus.OK
-        );
+        } catch( Exception e ){
+            return new ResponseEntity<>(
+                    e.getMessage(),
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
     }
 
     @PostMapping("/create")
