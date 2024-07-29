@@ -6,7 +6,7 @@ import org.modelmapper.ModelMapper;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class AccountingBookDtoUnitTest {
+public class AccountingBookDtoITest {
 
     private ModelMapper modelMapper = new ModelMapper();
 
