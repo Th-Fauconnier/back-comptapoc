@@ -1,6 +1,5 @@
 package com.fath.comptapoc.model.entities;
 
-import com.fath.comptapoc.model.entities.AccountingBook;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.ValidatorFactory;
@@ -14,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 import jakarta.validation.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class AccountingBookValidatorTest {
+public class AccountingBookValidatorITest {
 
     @Autowired
     private static Validator validator;
