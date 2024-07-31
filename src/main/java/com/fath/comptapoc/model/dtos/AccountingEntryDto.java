@@ -1,8 +1,9 @@
 package com.fath.comptapoc.model.dtos;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.Set;
 
 @Data
@@ -12,7 +13,8 @@ public class AccountingEntryDto {
 
     private String label;
 
-    private Date date;
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime date;
 
     private AccountingBookDto accountingBookDto;
 
