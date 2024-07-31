@@ -20,10 +20,14 @@ public class AccountingEntryValidatorITest {
     @Autowired
     private static Validator validator;
 
+    private static AccountingBook accountingBook;
+
     private Set<ConstraintViolation < AccountingEntry > > violations;
 
     @BeforeAll
     public static void setup() {
+        accountingBook = new AccountingBook();
+        accountingBook.setName( "test_book" );
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
     }
@@ -34,6 +38,7 @@ public class AccountingEntryValidatorITest {
             AccountingEntry accountingEntry = new AccountingEntry();
             accountingEntry.setLabel( "testLabel" );
             accountingEntry.setDate( LocalDateTime.now() );
+            accountingEntry.setAccountingBook( accountingBook );
 
             violations = validator.validate( accountingEntry );
 
@@ -53,6 +58,7 @@ public class AccountingEntryValidatorITest {
         try{
             AccountingEntry accountingEntry = new AccountingEntry();
             accountingEntry.setDate( LocalDateTime.now() );
+            accountingEntry.setAccountingBook( accountingBook );
             violations = validator.validate( accountingEntry );
 
             if( violations.size() == 1 ){
@@ -70,7 +76,7 @@ public class AccountingEntryValidatorITest {
         try {
             AccountingEntry accountingEntry = new AccountingEntry();
             accountingEntry.setLabel( "testLabel" );
-
+            accountingEntry.setAccountingBook( accountingBook );
             violations = validator.validate( accountingEntry );
 
             if( violations.size() == 1 ){
@@ -83,8 +89,18 @@ public class AccountingEntryValidatorITest {
         }
     }
 
-    //todo test relation AccountingBook
+    @Test
+    public void accountingEntryAccountingBookRelation_whenAccountingBookIsNull(){
+        AccountingEntry accountingEntry = new AccountingEntry();
+        accountingEntry.setLabel( "testLabel" );
+        accountingEntry.setDate( LocalDateTime.now() );
+        violations = validator.validate( accountingEntry );
 
-    //todo test Operations
+        if( violations.size() == 1 ){
+            violations.forEach( c -> assertThat( c.getMessage() ).isEqualTo( "AccountingBook is mandatory" ) );
+        } else {
+            fail( "ConstraintVilationException expected not throwing" );
+        }
+    }
 
 }
