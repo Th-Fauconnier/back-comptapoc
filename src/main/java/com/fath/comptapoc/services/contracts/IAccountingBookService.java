@@ -1,9 +1,7 @@
 package com.fath.comptapoc.services.contracts;
 
-import com.fath.comptapoc.model.dtos.AccountingBookDto;
 import com.fath.comptapoc.model.entities.AccountingBook;
 import jakarta.validation.ConstraintViolationException;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 
 public interface IAccountingBookService {
 
