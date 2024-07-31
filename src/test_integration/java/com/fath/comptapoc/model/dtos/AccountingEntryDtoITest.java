@@ -4,7 +4,7 @@ import com.fath.comptapoc.model.entities.AccountingEntry;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -16,7 +16,7 @@ public class AccountingEntryDtoITest {
     public void whenConvertAccountingEntryToAccountingEntryDto_thenCorrect() {
         AccountingEntry accountingEntry = new AccountingEntry();
         accountingEntry.setLabel( "LabelTest" );
-        accountingEntry.setDate( new Date() );
+        accountingEntry.setDate( LocalDateTime.now() );
 
         AccountingEntryDto accountingEntryDto = modelMapper.map( accountingEntry, AccountingEntryDto.class );
 
@@ -28,7 +28,7 @@ public class AccountingEntryDtoITest {
     public void whenConvertAccountingEntryDtoToAccountingEntry_thenCorrect() {
         AccountingEntryDto accountingEntryDto = new AccountingEntryDto();
         accountingEntryDto.setLabel( "LabelTest" );
-        accountingEntryDto.setDate( new Date() );
+        accountingEntryDto.setDate( LocalDateTime.now() );
 
         AccountingEntry accountingEntry = modelMapper.map( accountingEntryDto, AccountingEntry.class );
 
