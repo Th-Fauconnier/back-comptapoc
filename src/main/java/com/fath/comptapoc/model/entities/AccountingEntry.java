@@ -25,6 +25,7 @@ public class AccountingEntry {
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime date;
 
+    @NotNull(message = "AccountingBook is mandatory")
     @ManyToOne
     @JoinColumn(name = "bookId")
     private AccountingBook accountingBook;
