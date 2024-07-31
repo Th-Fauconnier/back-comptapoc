@@ -26,7 +26,7 @@ public class AccountingEntry {
     private LocalDateTime date;
 
     @NotNull(message = "AccountingBook is mandatory")
-    @ManyToOne
+    @ManyToOne( cascade = CascadeType.PERSIST)
     @JoinColumn(name = "bookId")
     private AccountingBook accountingBook;
 

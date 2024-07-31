@@ -18,7 +18,7 @@ public class AccountingBook {
     @NotBlank(message = "Name is mandatory")
     private String name;
 
-    @OneToMany(mappedBy = "accountingBook")
+    @OneToMany(mappedBy = "accountingBook", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<AccountingEntry> accountingEntries;
 
 }
