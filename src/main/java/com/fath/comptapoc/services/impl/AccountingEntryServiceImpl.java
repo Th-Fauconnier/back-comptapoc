@@ -1,12 +1,17 @@
 package com.fath.comptapoc.services.impl;
 
+import com.fath.comptapoc.model.dtos.AccountingEntryDto;
 import com.fath.comptapoc.model.entities.AccountingEntry;
 import com.fath.comptapoc.repository.AccountingEntryRepository;
 import com.fath.comptapoc.services.contracts.IAccountingEntryService;
+import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class AccountingEntryServiceImpl implements IAccountingEntryService {
@@ -19,21 +24,48 @@ public class AccountingEntryServiceImpl implements IAccountingEntryService {
 
     @Override
     public AccountingEntry saveAccountingEntry(AccountingEntry accountingEntry) throws ConstraintViolationException {
-        return null;
+        isAccountingEntryValid( accountingEntry );
+        return accountingEntryRepository.save( accountingEntry );
     }
 
     @Override
-    public Iterable<AccountingEntry> getAll() {
-        return null;
+    public Set<AccountingEntry> getAll() {
+        return accountingEntryRepository.findAll();
     }
 
     @Override
     public AccountingEntry getAccountingEntryById(Long id) throws ClassNotFoundException {
-        return null;
+        Optional<AccountingEntry> optionalAccountingEntry = accountingEntryRepository.findById( id );
+        if( optionalAccountingEntry.isEmpty() ){
+            throw new ClassNotFoundException( "AccountingEntry not found" );
+        }else {
+            return optionalAccountingEntry.get();
+        }
     }
 
     @Override
     public void deleteAccountingEntry(Long id) {
+        accountingEntryRepository.deleteById( id );
+    }
 
+    private void isAccountingEntryDtoValid( AccountingEntryDto accountingEntryDto ){
+
+    }
+
+    /**
+     *
+     * @param accountingEntry as bean to check
+     * @throws ConstraintViolationException
+     * if the accountingEntry isn't a valid bean, a ConstraintViolation will be threw
+     * constraints are define in the accountingEntry bean
+     */
+    private void isAccountingEntryValid( AccountingEntry accountingEntry ){
+        Set<ConstraintViolation<AccountingEntry>> violations = validator.validate( accountingEntry );
+
+        if( !violations.isEmpty() ){
+            StringBuilder sb = new StringBuilder();
+            violations.forEach( v -> sb.append( v.getMessage() ).append(". "));
+            throw new ConstraintViolationException( "Error occured: " + sb.toString(), violations );
+        }
     }
 }
