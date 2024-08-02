@@ -1,6 +1,7 @@
 package com.fath.comptapoc.controller;
 
 import static org.hamcrest.Matchers.hasSize;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -14,7 +15,6 @@ import com.fath.comptapoc.model.dtos.AccountingBookDto;
 import com.fath.comptapoc.model.entities.AccountingBook;
 import com.fath.comptapoc.services.impl.AccountingBookServiceImpl;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -91,13 +91,12 @@ public class AccountingBookControllerUnitTest {
 
     @Test
     public void createAccountingBook_whenIsOk() throws Exception {
-
         when( accountingBookDto.getName() ).thenReturn("test_name");
         when( accountingBookDto.getId() ).thenReturn(14L );
         when( accountingBook.getName() ).thenReturn("test_name");
         when( accountingBook.getId() ).thenReturn(14L );
 
-        when( accountingBookService.saveAccountingBook( ArgumentMatchers.any( AccountingBook.class ) ) ).thenReturn( accountingBook );
+        when( accountingBookService.saveAccountingBook( any( AccountingBook.class ) ) ).thenReturn( accountingBook );
 
         //then
         ResultActions r = mockMvc.perform(
@@ -116,7 +115,7 @@ public class AccountingBookControllerUnitTest {
 
         when( accountingBookDto.getName() ).thenReturn(null);
 
-        when( accountingBookService.saveAccountingBook( ArgumentMatchers.any( AccountingBook.class ) ) ).thenReturn( accountingBook );
+        when( accountingBookService.saveAccountingBook( any( AccountingBook.class ) ) ).thenReturn( accountingBook );
 
         //then
         ResultActions r = mockMvc.perform(

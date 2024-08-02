@@ -11,17 +11,16 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
 import java.util.Set;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Fail.fail;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @ActiveProfiles("test")
 @Transactional
 public class AccountingEntryServiceIT {
-
     @Autowired
     private AccountingEntryServiceImpl accountingEntryService;
 
@@ -31,56 +30,62 @@ public class AccountingEntryServiceIT {
     }
 
     @Test
-    public void saveAccountingEntry_thenIsNotValid(){
-        assertThrows(
-          ConstraintViolationException.class,
-                () -> accountingEntryService.saveAccountingEntry( new AccountingEntry() ),
-                "Excpected ConstraintViolationException to throw, but didn't"
-        );
-    }
+    public void whenSaveAccountingEntry_thenIsValid(){
+        //give
+        AccountingBook accountingBook = new AccountingBook();
+        accountingBook.setName( "testName_1" );
 
-    @Test
-    public void saveAccountingEntry_thenIsValid(){
-        //given
-        AccountingEntry accountingEntry = giveNewAccountingEntry(
-                "test_label_1",
-                giveNewAccountingBook( "test_book_1")
-        );
+        AccountingEntry accountingEntry = new AccountingEntry();
+        accountingEntry.setLabel( "test_label_1");
+
+        accountingEntry.setDate( LocalDateTime.now() );
+        accountingEntry.setAccountingBook( accountingBook );
 
         //when
-        try{
-            AccountingEntry accountingEntrySaved = accountingEntryService.saveAccountingEntry( accountingEntry );
-            //then
-            assertThat( accountingEntrySaved.getId() ).isNotNull();
-            assertEquals( accountingEntry.getLabel(), accountingEntrySaved.getLabel() );
-            assertEquals( accountingEntry.getDate(), accountingEntrySaved.getDate() );
-            assertEquals( accountingEntry.getAccountingBook().getName(), accountingEntrySaved.getAccountingBook().getName() );
-        } catch (Exception e ) {
-            fail( e.getMessage() );
-        }
+        AccountingEntry accountingEntrySaved = accountingEntryService.saveAccountingEntry( accountingEntry );
+
+        //then
+        assertEquals( accountingEntrySaved.getLabel(), accountingEntry.getLabel() );
+        assertEquals( accountingEntrySaved.getDate(), accountingEntry.getDate() );
+        assertEquals( accountingEntrySaved.getAccountingBook().getName(), accountingEntry.getAccountingBook().getName() );
+        assertThat( accountingEntry.getId() ).isNotNull();
+        assertThat( accountingEntry.getAccountingBook().getId() ).isNotNull();
+
     }
 
     @Test
-    public void getAccountingEntryById_thenNotFound(){
+    public void whenSaveAccountingEntry_thenIsNoValid(){
+        assertThrows(
+                ConstraintViolationException.class,
+                () -> accountingEntryService.saveAccountingEntry( new AccountingEntry() ),
+                "Expected ConstraintViolationException to throw, but it didn't"
+        );
+    }
+
+    @Test
+    public void whenGetAccountingEntryById_whenNotFound(){
         try{
             assertThrows(
-                    ClassNotFoundException.class,
+              ClassNotFoundException.class,
                     () -> accountingEntryService.getAccountingEntryById( 999L ),
-                    "Expected notFoundException to thrown, but didn't"
+                    "Expected notFoundException to throw, but it didn't"
             );
-        }catch(Exception e ){
+        } catch(Exception e){
             fail( e.getMessage() );
         }
     }
 
     @Test
-    public void getAccountingEntryById_thenFoundIt(){
+    public void whenGetAccountingEntryById_whenFound(){
         try{
             //given
-            AccountingEntry accountingEntry = giveNewAccountingEntry(
-                    "test_label_2",
-                    giveNewAccountingBook( "test_book_2")
-            );
+            AccountingBook accountingBook = new AccountingBook();
+            accountingBook.setName( "test_book_1" );
+            AccountingEntry accountingEntry = new AccountingEntry();
+            accountingEntry.setLabel( "test_label_1" );
+            accountingEntry.setDate( LocalDateTime.now() );
+            accountingEntry.setAccountingBook( accountingBook );
+
             AccountingEntry accountingEntrySaved = accountingEntryService.saveAccountingEntry( accountingEntry );
 
             //when
@@ -89,75 +94,73 @@ public class AccountingEntryServiceIT {
             //then
             assertEquals( accountingEntryFromDB.getLabel(), accountingEntrySaved.getLabel() );
             assertEquals( accountingEntryFromDB.getDate(), accountingEntrySaved.getDate() );
-            assertEquals( accountingEntryFromDB.getAccountingBook().getId(), accountingEntrySaved.getAccountingBook().getId() );
+            assertEquals( accountingEntryFromDB.getAccountingBook().getName(), accountingEntrySaved.getAccountingBook().getName() );
 
-        } catch(Exception e ) {
-            fail (e.getMessage() );
+        } catch(Exception e){
+            fail( e.getMessage() );
         }
     }
 
-    @Test void getAllAccountingEntry(){
+    @Test
+    public void whenGetAllEntries(){
         try{
             //given
-            Set<AccountingEntry> accountingEntries = new HashSet<>();
-            AccountingBook ab1 = giveNewAccountingBook("test_book_3");
-            AccountingBook ab2 = giveNewAccountingBook("test_book_4");
-            AccountingEntry ae1 = giveNewAccountingEntry("test_label_4", ab1);
-            AccountingEntry ae2 = giveNewAccountingEntry("test_label_5", ab1);
-            AccountingEntry ae3 = giveNewAccountingEntry("test_label_6", ab2);
-            accountingEntries.add(ae1);
-            accountingEntries.add(ae2);
-            accountingEntries.add(ae3);
-
+            AccountingBook accountingBook = giveNewAccountingBook("test_book_3");
+            Set<AccountingEntry> accountingEntries = Set.of(
+                    giveNewAccountingEntry( "test_label_2", accountingBook),
+                    giveNewAccountingEntry( "test_label_3", accountingBook),
+                    giveNewAccountingEntry( "test_label_4", accountingBook)
+            );
             accountingEntries.forEach( ae -> accountingEntryService.saveAccountingEntry( ae ) );
 
             //when
             Set<AccountingEntry> accountingEntriesFromDB = accountingEntryService.getAll();
 
             //then
-            assertEquals( accountingEntriesFromDB.size(), 3);
+            assertEquals( accountingEntriesFromDB.size(), accountingEntries.size() );
             assertTrue( accountingEntriesFromDB.containsAll( accountingEntries ) );
 
-        } catch(Exception e ){
+        } catch (Exception e ){
             fail( e.getMessage() );
         }
     }
 
     @Test
-    public void deleteAccountingEntry(){
+    public void whenDeleteAccountingEntry_thenIsOk(){
         try{
-            //given
-            AccountingBook ac = giveNewAccountingBook("test_book_6" );
-            AccountingEntry ae = giveNewAccountingEntry( "test_label_8", ac );
-            AccountingEntry accountingEntryFromDB = accountingEntryService.saveAccountingEntry( ae );
+            //give
+            AccountingEntry accountingEntry = giveNewAccountingEntry(
+                    "test_label_5",
+                    giveNewAccountingBook( " test_book_4")
+            );
+            AccountingEntry accountingEntrySaved = accountingEntryService.saveAccountingEntry( accountingEntry );
 
             //when
-            accountingEntryService.deleteAccountingEntry( accountingEntryFromDB.getId() );
+            accountingEntryService.deleteAccountingEntry( accountingEntrySaved.getId() );
 
             //then
             assertThrows(
                     ClassNotFoundException.class,
-                    () -> accountingEntryService.getAccountingEntryById( accountingEntryFromDB.getId() ),
+                    () -> accountingEntryService.getAccountingEntryById( accountingEntrySaved.getId() ),
                     "Expected notFoundException to throw, but it didn't"
             );
 
-         } catch(Exception e) {
+        } catch(Exception e){
             fail( e.getMessage() );
         }
     }
 
-
-    private AccountingEntry giveNewAccountingEntry( String label, AccountingBook accountingBook ){
-        AccountingEntry accountingEntry = new AccountingEntry();
-        accountingEntry.setLabel( label );
-        accountingEntry.setDate( LocalDateTime.now() );
-        accountingEntry.setAccountingBook( accountingBook );
-        return accountingEntry;
-    }
-
-    private AccountingBook giveNewAccountingBook(String name){
+    private AccountingBook giveNewAccountingBook( String name ){
         AccountingBook accountingBook = new AccountingBook();
         accountingBook.setName( name );
         return accountingBook;
+    }
+
+    private AccountingEntry giveNewAccountingEntry( String label, AccountingBook book ){
+        AccountingEntry accountingEntry = new AccountingEntry();
+        accountingEntry.setLabel( label );
+        accountingEntry.setDate( LocalDateTime.now() );
+        accountingEntry.setAccountingBook( book );
+        return accountingEntry;
     }
 }
