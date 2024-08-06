@@ -14,6 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 
+import java.time.LocalDateTime;
 import java.util.Set;
 
 import static org.hamcrest.Matchers.hasSize;
@@ -27,7 +28,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest
+@WebMvcTest(AccountingEntryController.class)
 public class AccountingEntryControllerUnitTest {
 
     @Autowired
@@ -54,6 +55,7 @@ public class AccountingEntryControllerUnitTest {
                     .andExpect( status().isNotFound() );
 
         } catch (Exception e ){
+            System.out.println( e );
             fail( e.getMessage() );
         }
     }
@@ -62,6 +64,11 @@ public class AccountingEntryControllerUnitTest {
     public void getAccountingEntryByID_thenIsFound() {
         try{
             //give
+            accountingEntry = giveAccountingEntryMock(
+                    "test_label",
+                    giveAccountingBookMock( "test_book_name"),
+                    LocalDateTime.now()
+            );
             when( accountingEntryService.getAccountingEntryById( anyLong() ) )
                     .thenReturn( accountingEntry );
 
@@ -80,9 +87,9 @@ public class AccountingEntryControllerUnitTest {
             //give
             AccountingBook accountingBookMock = giveAccountingBookMock("test_book_1");
             Set<AccountingEntry> accountingEntries = Set.of(
-                    giveAccountingEntryMock("test_entry_1", accountingBookMock),
-                    giveAccountingEntryMock("test_entry_2", accountingBookMock),
-                    giveAccountingEntryMock("test_entry_3", accountingBookMock)
+                    giveAccountingEntryMock("test_entry_1", accountingBookMock, LocalDateTime.now() ),
+                    giveAccountingEntryMock("test_entry_2", accountingBookMock, LocalDateTime.now()),
+                    giveAccountingEntryMock("test_entry_3", accountingBookMock, LocalDateTime.now())
             );
             when( accountingEntryService.getAll() ).thenReturn( accountingEntries );
 
@@ -100,19 +107,23 @@ public class AccountingEntryControllerUnitTest {
     public void whenCreateAccountingEntry_thenIsOk(){
         try{
             //give
+            LocalDateTime dateTime = LocalDateTime.now();
+            AccountingBookDto accountingBookDtoMock = giveAccountingBookDtoMock("test_book_2" );
             AccountingEntryDto accountingEntryDtoMock = giveAccountingEntryDtoMock(
                     "test_entry_4",
-                    giveAccountingBookDtoMock("test_book_2" )
+                    accountingBookDtoMock,
+                    dateTime
             );
-            when( accountingEntryDtoMock.getId() ).thenReturn( 14L );
 
             AccountingEntry accountingEntryMock = giveAccountingEntryMock(
                     "test_entry_4",
-                    giveAccountingBookMock( "test_book_2")
+                    giveAccountingBookMock( "test_book_2"),
+                    dateTime
             );
             when( accountingEntryMock.getId() ).thenReturn( 14L );
+            when( accountingEntryDtoMock.getId() ).thenReturn( 14L );
 
-            when( accountingEntryService.saveAccountingEntry( any( AccountingEntry.class ) ) )
+            when( accountingEntryService.saveAccountingEntry( any(AccountingEntry.class) ) )
                     .thenReturn( accountingEntryMock );
 
             //when //then
@@ -120,8 +131,7 @@ public class AccountingEntryControllerUnitTest {
                     .content( new ObjectMapper().writeValueAsString( accountingEntryDtoMock ) )
                     .contentType(MediaType.APPLICATION_JSON )
                     .accept( MediaType.APPLICATION_JSON )
-            )
-                    .andExpect( status().isCreated() )
+            ).andExpect( status().isCreated() )
                     .andExpect( jsonPath("$.id").value( 14L ) )
                     .andExpect( jsonPath("$.label").value("test_entry_4") )
                     .andExpect( jsonPath( "$.accountingBook.name").value( "test_book_2" ) );
@@ -154,9 +164,10 @@ public class AccountingEntryControllerUnitTest {
         return accountingBookMock;
     }
 
-    private AccountingEntry giveAccountingEntryMock(String label, AccountingBook book){
+    private AccountingEntry giveAccountingEntryMock(String label, AccountingBook book,LocalDateTime dateTime){
         AccountingEntry accountingEntryMock = mock( AccountingEntry.class );
         when( accountingEntryMock.getLabel() ).thenReturn( label );
+        when( accountingEntryMock.getDate() ).thenReturn( dateTime );
         when( accountingEntryMock.getAccountingBook() ).thenReturn( book );
         return accountingEntryMock;
     }
@@ -167,10 +178,11 @@ public class AccountingEntryControllerUnitTest {
         return accountingBookMock;
     }
 
-    private AccountingEntryDto giveAccountingEntryDtoMock(String label, AccountingBookDto book){
+    private AccountingEntryDto giveAccountingEntryDtoMock(String label, AccountingBookDto book, LocalDateTime dateTime){
         AccountingEntryDto accountingEntryMock = mock( AccountingEntryDto.class );
         when( accountingEntryMock.getLabel() ).thenReturn( label );
-        when( accountingEntryMock.getAccountingBookDto() ).thenReturn( book );
+        when( accountingEntryMock.getDate() ).thenReturn( dateTime );
+        when( accountingEntryMock.getAccountingBook() ).thenReturn( book );
         return accountingEntryMock;
     }
 }
