@@ -80,7 +80,6 @@ public class AccountingBookController {
                     HttpStatus.CREATED
             );
         } catch (ConstraintViolationException e ){
-            System.out.println( e.getMessage() );
             return new ResponseEntity<>(
                     e.getMessage(),
                     HttpStatus.BAD_REQUEST
