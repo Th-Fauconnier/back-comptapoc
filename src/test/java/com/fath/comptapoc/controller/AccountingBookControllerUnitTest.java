@@ -115,8 +115,6 @@ public class AccountingBookControllerUnitTest {
 
         when( accountingBookDto.getName() ).thenReturn(null);
 
-        when( accountingBookService.saveAccountingBook( any( AccountingBook.class ) ) ).thenReturn( accountingBook );
-
         //then
         ResultActions r = mockMvc.perform(
                         post("/accountBook/create")
