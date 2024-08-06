@@ -1,7 +1,14 @@
 package com.fath.comptapoc.model.dtos;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 import java.util.Set;
@@ -11,12 +18,19 @@ public class AccountingEntryDto {
 
     private Long id;
 
+    @NotBlank(message = "Name is mandatory")
     private String label;
 
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    //ModelMapper need JsonD&S, RequestBody need JsF&DateFormat
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm", iso = DateTimeFormat.ISO.DATE_TIME)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
+    @NotNull(message = "Date is mandatory")
     private LocalDateTime date;
 
-    private AccountingBookDto accountingBookDto;
+    @NotNull(message = "Book is mandatory")
+    private AccountingBookDto accountingBook;
 
     private Set<OperationDto> operations;
 }
