@@ -18,7 +18,7 @@ public class AccountingEntryDto {
 
     private Long id;
 
-    @NotBlank(message = "Name is mandatory")
+    @NotBlank(message = "Label is mandatory")
     private String label;
 
     //ModelMapper need JsonD&S, RequestBody need JsF&DateFormat
