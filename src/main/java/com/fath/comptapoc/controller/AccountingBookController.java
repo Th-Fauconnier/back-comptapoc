@@ -92,6 +92,19 @@ public class AccountingBookController {
         }
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteAccountingBook( @PathVariable Long id ){
+        try{
+            accountingBookService.deleteAccountingBook( id );
+            return new ResponseEntity<>( HttpStatus.OK );
+        } catch( Exception e ){
+            return new ResponseEntity<>(
+                    e.getMessage(),
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
     private AccountingBook convertToEntity( AccountingBookDto accountingBookDto ) {
         return modelMapper.map( accountingBookDto, AccountingBook.class );
     }
