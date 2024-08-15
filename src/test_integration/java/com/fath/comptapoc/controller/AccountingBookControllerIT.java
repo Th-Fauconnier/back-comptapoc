@@ -27,8 +27,6 @@ public class AccountingBookControllerIT {
     @Autowired
     private MockMvc mockMvc;
 
-    private AccountingBookDto accountingBookDto;
-
     @Test
     @Order(1)
     public void whenGetAccountingBook_thenNotFound() throws Exception {
