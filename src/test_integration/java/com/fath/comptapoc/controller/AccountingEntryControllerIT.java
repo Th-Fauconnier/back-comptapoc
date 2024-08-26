@@ -3,7 +3,6 @@ package com.fath.comptapoc.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fath.comptapoc.model.dtos.AccountingBookDto;
 import com.fath.comptapoc.model.dtos.AccountingEntryDto;
-import com.fath.comptapoc.model.entities.AccountingEntry;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -35,8 +34,6 @@ public class AccountingEntryControllerIT {
     @Order(1)
     public void whenCreateAccountingEntryHaventAccountingBook_thenBadRequest() throws Exception {
 
-        //todo faire exceptionHanlder pour pas renvoie de stack trace, mais just message erreur simple, par controller.
-        //todo en effet le renvoie d'exception par @valid est automatique et renvoie tout...
         //give
         AccountingEntryDto accountingEntry = new AccountingEntryDto();
         accountingEntry.setLabel( "label_test_1" );
@@ -66,7 +63,8 @@ public class AccountingEntryControllerIT {
                         .contentType( MediaType.APPLICATION_JSON )
                         .accept( MediaType.APPLICATION_JSON )
                 )
-                .andExpect( status().isBadRequest() );
+                .andExpect( status().isBadRequest() )
+                .andExpect( jsonPath("$.message").value( "Label is mandatory") );
     }
 
     @Test
@@ -83,7 +81,8 @@ public class AccountingEntryControllerIT {
                         .contentType( MediaType.APPLICATION_JSON )
                         .accept( MediaType.APPLICATION_JSON )
                 )
-                .andExpect( status().isBadRequest() );
+                .andExpect( status().isBadRequest() )
+                .andExpect( jsonPath("$.message").value( "Date is mandatory") );
     }
 
     private AccountingBookDto giveAnAccountingBookDto( String name ){
