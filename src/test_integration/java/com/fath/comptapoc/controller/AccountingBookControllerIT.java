@@ -2,6 +2,7 @@ package com.fath.comptapoc.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fath.comptapoc.model.dtos.AccountingBookDto;
+import com.jayway.jsonpath.JsonPath;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -12,7 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.MvcResult;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -26,6 +27,8 @@ public class AccountingBookControllerIT {
 
     @Autowired
     private MockMvc mockMvc;
+
+    private Integer idFromCreatedBook;
 
     @Test
     @Order(1)
@@ -58,12 +61,11 @@ public class AccountingBookControllerIT {
         accountingBookDto.setName( "label_test_1" );
 
         //when //then
-        ResultActions resultActions = mockMvc.perform( post("/accountBook/create")
+        mockMvc.perform( post("/accountBook/create")
                         .content( new ObjectMapper().writeValueAsString( accountingBookDto) )
                         .contentType( MediaType.APPLICATION_JSON )
                         .accept( MediaType.APPLICATION_JSON )
-        )
-                .andExpect( status().isCreated() )
+        ) .andExpect( status().isCreated() )
                 .andExpect( jsonPath("$.id").exists() )
                 .andExpect( jsonPath( "$.name").value( accountingBookDto.getName() ));
     }
@@ -72,11 +74,21 @@ public class AccountingBookControllerIT {
     @Order(4)
     public void whenGetAccountingBookById_thenIsFound() throws Exception {
         //give
+        Integer id;
+        AccountingBookDto accountingBookDto = new AccountingBookDto();
+        accountingBookDto.setName( "label_test_1" );
+        MvcResult result = mockMvc.perform( post("/accountBook/create")
+                        .content( new ObjectMapper().writeValueAsString( accountingBookDto) )
+                        .contentType( MediaType.APPLICATION_JSON )
+                        .accept( MediaType.APPLICATION_JSON )
+                ).andReturn();
+
+        id = JsonPath.read( result.getResponse().getContentAsString(), "$.id");
 
         //then //when
-        mockMvc.perform( get("/accountBook/1"))
+        mockMvc.perform( get("/accountBook/" + id ))
                 .andExpect( status().isFound() )
-                .andExpect( jsonPath("$.id").value( 1L))
+                .andExpect( jsonPath("$.id").value( id ))
                 .andExpect( jsonPath( "$.name").value(  "label_test_1"));
     }
 
