@@ -16,6 +16,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -83,6 +84,34 @@ public class AccountingEntryControllerIT {
                 )
                 .andExpect( status().isBadRequest() )
                 .andExpect( jsonPath("$.message").value( "Date is mandatory") );
+    }
+
+    @Test
+    @Order(1)
+    public void whenCreateAccountingEntry_thenIsCreated() throws Exception {
+        //give
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        LocalDateTime date = LocalDateTime.now();
+
+        AccountingEntryDto accountingEntryDto = new AccountingEntryDto();
+        accountingEntryDto.setDate( date );
+        accountingEntryDto.setLabel( "Test_label_1" );
+        accountingEntryDto.setAccountingBook( giveAnAccountingBookDto("test_book_name" ) );
+
+        System.out.println( "TEST" );
+        System.out.println( accountingEntryDto );
+
+        //when //then
+        mockMvc.perform( post("/accountingEntry/create")
+                .content( new ObjectMapper().writeValueAsString( accountingEntryDto ) )
+                .contentType( MediaType.APPLICATION_JSON )
+                .accept( MediaType.APPLICATION_JSON )
+        )
+                .andExpect( status().isCreated() )
+                .andExpect( jsonPath("$.id" ).exists() )
+                .andExpect( jsonPath( "$.label" ).value( accountingEntryDto.getLabel() ) )
+                .andExpect( jsonPath( "$.date" ).value( date.format( formatter ) ))
+                .andExpect( jsonPath("$.accountingBook.name" ).value( accountingEntryDto.getAccountingBook().getName() ));
     }
 
     private AccountingBookDto giveAnAccountingBookDto( String name ){
