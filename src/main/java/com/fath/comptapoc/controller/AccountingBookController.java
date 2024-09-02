@@ -92,6 +92,15 @@ public class AccountingBookController {
         }
     }
 
+    @PutMapping("/update")
+    public ResponseEntity<?> putAccountingBook( @Valid @RequestBody AccountingBookDto accountingBookDto ){
+        AccountingBook accountingBook = accountingBookService.saveAccountingBook( convertToEntity( accountingBookDto ) );
+        return new ResponseEntity<>(
+                convertToDto( accountingBook ),
+                HttpStatus.OK
+        );
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteAccountingBook( @PathVariable Long id ){
         try{
