@@ -3,6 +3,8 @@ package com.fath.comptapoc.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fath.comptapoc.model.dtos.AccountingBookDto;
 import com.fath.comptapoc.model.dtos.AccountingEntryDto;
+import com.jayway.jsonpath.JsonPath;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -13,12 +15,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -98,9 +103,6 @@ public class AccountingEntryControllerIT {
         accountingEntryDto.setLabel( "Test_label_1" );
         accountingEntryDto.setAccountingBook( giveAnAccountingBookDto("test_book_name" ) );
 
-        System.out.println( "TEST" );
-        System.out.println( accountingEntryDto );
-
         //when //then
         mockMvc.perform( post("/accountingEntry/create")
                 .content( new ObjectMapper().writeValueAsString( accountingEntryDto ) )
@@ -114,6 +116,63 @@ public class AccountingEntryControllerIT {
                 .andExpect( jsonPath("$.accountingBook.name" ).value( accountingEntryDto.getAccountingBook().getName() ));
     }
 
+    @Test
+    @Order(4)
+    @Transactional
+    public void whenGetAccountingEntryById_thenIsFounded() throws Exception {
+
+        //give
+        String label = "test_label_1";
+        String bookName = "test_book_name_1";
+        Integer id = createAccountingEntryAndGiveHisId( label, bookName);
+
+        //when //then
+        mockMvc.perform( get("/accountingEntry/" + id ) )
+                .andExpect( status().isFound() )
+                .andExpect( jsonPath( "$.id").value( id ) )
+                .andExpect( jsonPath("$.label").value( label ) )
+                .andExpect( jsonPath( "$.accountingBook.name").value( bookName ) );
+
+    }
+
+    @Test
+    @Order(5)
+    @Transactional
+    public void whenDeleteAccountingEntryById_thenIsDeleted() throws Exception {
+        //give
+        Integer id = createAccountingEntryAndGiveHisId( "test_label_2", "test_book_name_2");
+
+        //when //then
+        mockMvc.perform( delete("/accountingEntry/" + id ) )
+                .andExpect( status().isOk() );
+        //then
+        mockMvc.perform( get("/accountingEntry/" + id) )
+                .andExpect( status().isNotFound() );
+    }
+
+    private Integer createAccountingEntryAndGiveHisId( String label, String bookName) throws Exception {
+        AccountingEntryDto accountingEntryDto = giveAnAccountingEntryDto(
+                label,
+                LocalDateTime.now(),
+                giveAnAccountingBookDto( bookName )
+        );
+        MvcResult result = mockMvc.perform( post("/accountingEntry/create" )
+                .content( new ObjectMapper().writeValueAsString( accountingEntryDto ) )
+                .contentType( MediaType.APPLICATION_JSON )
+                .accept( MediaType.APPLICATION_JSON )
+        ).andReturn();
+
+        return JsonPath.read( result.getResponse().getContentAsString(), "$.id");
+    }
+
+    private AccountingEntryDto giveAnAccountingEntryDto( String label, LocalDateTime localDateTime, AccountingBookDto accountingBookDto ){
+        AccountingEntryDto accountingEntryDto = new AccountingEntryDto();
+        accountingEntryDto.setLabel( label );
+        accountingEntryDto.setDate( localDateTime );
+        accountingEntryDto.setAccountingBook( accountingBookDto );
+        return accountingEntryDto;
+
+    }
     private AccountingBookDto giveAnAccountingBookDto( String name ){
         AccountingBookDto accountingBookDto = new AccountingBookDto();
         accountingBookDto.setName( name );
