@@ -112,6 +112,28 @@ public class AccountingBookControllerIT {
       //  accountingBookDtos.forEach( aBook -> createAccountingBookAndGiveHisId( aBook.getName() ));
     }
 
+    @Test
+    @Order(7)
+    @Transactional
+    public void whenPutAccountingBook_thenIsOk() throws Exception {
+        //give
+        Integer id = createAccountingBookAndGiveHisId( "bookName_01" );
+        AccountingBookDto accountingBookDto = new AccountingBookDto();
+        accountingBookDto.setId( id.longValue() );
+        accountingBookDto.setName( "modified_bookName_01" );
+
+        //when then
+        mockMvc.perform( put("/accountBook/update" )
+                .content( new ObjectMapper().writeValueAsString( accountingBookDto ) )
+                .contentType( MediaType.APPLICATION_JSON )
+                .accept( MediaType.APPLICATION_JSON )
+        )
+                .andExpect( status().isOk() )
+                .andExpect( jsonPath( "$.id").value( id ) )
+                .andExpect( jsonPath( "$.name").value( "modified_bookName_01") );
+
+    }
+
     private Integer createAccountingBookAndGiveHisId( String bookName) throws Exception {
         AccountingBookDto accountingBookDto = giveAnAccountingBookDto( bookName );
 
