@@ -3,6 +3,7 @@ package com.fath.comptapoc.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fath.comptapoc.model.dtos.AccountingBookDto;
 import com.jayway.jsonpath.JsonPath;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -14,6 +15,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+
+import java.util.Set;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -57,8 +60,7 @@ public class AccountingBookControllerIT {
     @Order(3)
     public void whenCreateAccountingBook_thenIsCreated() throws Exception {
         //give
-        AccountingBookDto accountingBookDto = new AccountingBookDto();
-        accountingBookDto.setName( "label_test_1" );
+        AccountingBookDto accountingBookDto = giveAnAccountingBookDto( "label_test_1" );
 
         //when //then
         mockMvc.perform( post("/accountBook/create")
@@ -72,18 +74,10 @@ public class AccountingBookControllerIT {
 
     @Test
     @Order(4)
+    @Transactional
     public void whenGetAccountingBookById_thenIsFound() throws Exception {
         //give
-        Integer id;
-        AccountingBookDto accountingBookDto = new AccountingBookDto();
-        accountingBookDto.setName( "label_test_1" );
-        MvcResult result = mockMvc.perform( post("/accountBook/create")
-                        .content( new ObjectMapper().writeValueAsString( accountingBookDto) )
-                        .contentType( MediaType.APPLICATION_JSON )
-                        .accept( MediaType.APPLICATION_JSON )
-                ).andReturn();
-
-        id = JsonPath.read( result.getResponse().getContentAsString(), "$.id");
+        Integer id = createAccountingBookAndGiveHisId( "label_test_1" );
 
         //then //when
         mockMvc.perform( get("/accountBook/" + id ))
@@ -95,11 +89,44 @@ public class AccountingBookControllerIT {
     @Test
     @Order(5)
     public void whenDeleteAccountingBookById_thenIsDeleted() throws Exception {
+        //give
+        Integer id = createAccountingBookAndGiveHisId( "label_test_2" );
+
         //when //then
-        mockMvc.perform(delete("/accountBook/1"))
+        mockMvc.perform(delete("/accountBook/" + id))
                 .andExpect( status().isOk() );
         //then
-        mockMvc.perform( get("/accountBook/1"))
+        mockMvc.perform( get("/accountBook/" + id))
                 .andExpect( status().isNotFound() );
+    }
+
+    @Test
+    @Order(6)
+    public void whenGetAllAccountingBook_thenIsOk(){
+        //give
+        Set<AccountingBookDto> accountingBookDtos = Set.of(
+                giveAnAccountingBookDto( "book_1"),
+                giveAnAccountingBookDto( "book_2"),
+                giveAnAccountingBookDto( "book_3")
+        );
+      //  accountingBookDtos.forEach( aBook -> createAccountingBookAndGiveHisId( aBook.getName() ));
+    }
+
+    private Integer createAccountingBookAndGiveHisId( String bookName) throws Exception {
+        AccountingBookDto accountingBookDto = giveAnAccountingBookDto( bookName );
+
+        MvcResult result = mockMvc.perform( post("/accountBook/create" )
+                .content( new ObjectMapper().writeValueAsString( accountingBookDto ) )
+                .contentType( MediaType.APPLICATION_JSON )
+                .accept( MediaType.APPLICATION_JSON )
+        ).andReturn();
+
+        return JsonPath.read( result.getResponse().getContentAsString(), "$.id");
+    }
+
+    private AccountingBookDto giveAnAccountingBookDto( String bookName ){
+        AccountingBookDto accountingBookDto = new AccountingBookDto();
+        accountingBookDto.setName( bookName );
+        return accountingBookDto;
     }
 }
