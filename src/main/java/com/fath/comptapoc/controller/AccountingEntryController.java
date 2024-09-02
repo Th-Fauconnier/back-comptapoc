@@ -28,7 +28,7 @@ public class AccountingEntryController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getAccountingEntryById(@PathVariable Long id){
+    public ResponseEntity<?> getAccountingEntryById(@PathVariable Long id) throws ClassNotFoundException {
         try{
             AccountingEntry accountingEntry = accountingEntryService.getAccountingEntryById( id );
             return new ResponseEntity<>(
@@ -94,7 +94,7 @@ public class AccountingEntryController {
         }
     }
 
-    @DeleteMapping
+    @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteAccountingEntry(@PathVariable Long id ){
         try {
             accountingEntryService.deleteAccountingEntry( id );
