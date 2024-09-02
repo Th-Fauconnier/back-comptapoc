@@ -92,6 +92,25 @@ public class AccountingBookServiceIT {
     }
 
     @Test
+    public void putAccountingBook_whenIsSuccess(){
+        try{
+            //give
+            AccountingBook accountingBook = new AccountingBook();
+            accountingBook.setName( "testName_03" );
+            AccountingBook accountingBookSaved = accountingService.saveAccountingBook( accountingBook );
+
+            accountingBookSaved.setName( "modifiedName_01" );
+            //when then
+            AccountingBook accountingBookModified = accountingService.saveAccountingBook( accountingBookSaved );
+            assertEquals( accountingBookModified.getName(), accountingBookSaved.getName() );
+            assertEquals( accountingBookModified.getId(), accountingBookSaved.getId() );
+
+        } catch( Exception e ){
+            fail( e.getMessage() );
+        }
+    }
+
+    @Test
     public void getAllAccountingBooks(){
         try{
 
