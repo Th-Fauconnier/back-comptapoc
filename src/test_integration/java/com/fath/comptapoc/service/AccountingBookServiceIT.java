@@ -87,7 +87,6 @@ public class AccountingBookServiceIT {
            assertEquals( accountingBookFromDB.getId(), accountingBook.getId() );
 
         } catch(Exception e ){
-            System.out.println( e );
             fail( e.getMessage() );
         }
     }
