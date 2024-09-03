@@ -2,6 +2,7 @@ package com.fath.comptapoc.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fath.comptapoc.model.dtos.AccountingBookDto;
+import com.fath.comptapoc.model.dtos.PutAccountingBookDto;
 import com.jayway.jsonpath.JsonPath;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.MethodOrderer;
@@ -93,7 +94,7 @@ public class AccountingBookControllerIT {
         Integer id = createAccountingBookAndGiveHisId( "label_test_2" );
 
         //when //then
-        mockMvc.perform(delete("/accountBook/" + id))
+        mockMvc.perform( delete("/accountBook/" + id))
                 .andExpect( status().isOk() );
         //then
         mockMvc.perform( get("/accountBook/" + id))
@@ -114,17 +115,53 @@ public class AccountingBookControllerIT {
 
     @Test
     @Order(7)
+    public void whenPutAccountingBook_giveMissingId_thenBadRequest() throws Exception {
+        //give
+        PutAccountingBookDto putAccountingBookDto = new PutAccountingBookDto();
+        putAccountingBookDto.setName( "modifiedName_test_1");
+
+        //when //then
+        mockMvc.perform( put("/accountBook/update")
+                .content( new ObjectMapper().writeValueAsString( putAccountingBookDto ) )
+                .contentType( MediaType.APPLICATION_JSON )
+                .accept( MediaType.APPLICATION_JSON )
+        )
+                .andExpect( status().isBadRequest() )
+                .andExpect( jsonPath("$.message").value( "Id is mandatory") );
+
+    }
+
+    @Test
+    @Order(8)
+    public void whenPutAccountingBook_giveMissingName_thenBadRequest() throws Exception {
+        //give
+        PutAccountingBookDto putAccountingBookDto = new PutAccountingBookDto();
+        putAccountingBookDto.setId( 55L );
+
+        //when //then
+        mockMvc.perform( put("/accountBook/update")
+                        .content( new ObjectMapper().writeValueAsString( putAccountingBookDto ) )
+                        .contentType( MediaType.APPLICATION_JSON )
+                        .accept( MediaType.APPLICATION_JSON )
+                )
+                .andExpect( status().isBadRequest() )
+                .andExpect( jsonPath("$.message").value( "Name is mandatory") );
+
+    }
+
+    @Test
+    @Order(9)
     @Transactional
-    public void whenPutAccountingBook_thenIsOk() throws Exception {
+    public void whenPutAccountingBook_giveValidDto_thenIsOk() throws Exception {
         //give
         Integer id = createAccountingBookAndGiveHisId( "bookName_01" );
-        AccountingBookDto accountingBookDto = new AccountingBookDto();
-        accountingBookDto.setId( id.longValue() );
-        accountingBookDto.setName( "modified_bookName_01" );
+        PutAccountingBookDto putAccountingBookDto = new PutAccountingBookDto();
+        putAccountingBookDto.setId( id.longValue() );
+        putAccountingBookDto.setName( "modified_bookName_01" );
 
         //when then
         mockMvc.perform( put("/accountBook/update" )
-                .content( new ObjectMapper().writeValueAsString( accountingBookDto ) )
+                .content( new ObjectMapper().writeValueAsString( putAccountingBookDto ) )
                 .contentType( MediaType.APPLICATION_JSON )
                 .accept( MediaType.APPLICATION_JSON )
         )
