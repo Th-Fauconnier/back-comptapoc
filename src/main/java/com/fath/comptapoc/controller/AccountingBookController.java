@@ -1,6 +1,7 @@
 package com.fath.comptapoc.controller;
 
 import com.fath.comptapoc.model.dtos.AccountingBookDto;
+import com.fath.comptapoc.model.dtos.PutAccountingBookDto;
 import com.fath.comptapoc.model.entities.AccountingBook;
 import com.fath.comptapoc.services.impl.AccountingBookServiceImpl;
 import jakarta.validation.ConstraintViolationException;
@@ -93,8 +94,8 @@ public class AccountingBookController {
     }
 
     @PutMapping("/update")
-    public ResponseEntity<?> putAccountingBook( @Valid @RequestBody AccountingBookDto accountingBookDto ){
-        AccountingBook accountingBook = accountingBookService.saveAccountingBook( convertToEntity( accountingBookDto ) );
+    public ResponseEntity<?> putAccountingBook( @Valid @RequestBody PutAccountingBookDto putAccountingBookDto ){
+        AccountingBook accountingBook = accountingBookService.saveAccountingBook( convertToEntity( putAccountingBookDto ) );
         return new ResponseEntity<>(
                 convertToDto( accountingBook ),
                 HttpStatus.OK
