@@ -3,6 +3,7 @@ package com.fath.comptapoc.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fath.comptapoc.model.dtos.AccountingBookDto;
 import com.fath.comptapoc.model.dtos.AccountingEntryDto;
+import com.fath.comptapoc.model.dtos.PutAccountingEntryDto;
 import com.fath.comptapoc.model.entities.AccountingBook;
 import com.fath.comptapoc.model.entities.AccountingEntry;
 import com.fath.comptapoc.services.impl.AccountingEntryServiceImpl;
@@ -19,12 +20,10 @@ import java.util.Set;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.fail;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -36,12 +35,6 @@ public class AccountingEntryControllerUnitTest {
 
     @MockBean
     private AccountingEntryServiceImpl accountingEntryService;
-
-    @MockBean
-    private AccountingEntryDto accountingEntryDto;
-
-    @MockBean
-    private AccountingEntry accountingEntry;
 
     @Test
     public void getAccountingEntryByID_thenNotFound(){
@@ -55,7 +48,6 @@ public class AccountingEntryControllerUnitTest {
                     .andExpect( status().isNotFound() );
 
         } catch (Exception e ){
-            System.out.println( e );
             fail( e.getMessage() );
         }
     }
@@ -64,7 +56,7 @@ public class AccountingEntryControllerUnitTest {
     public void getAccountingEntryByID_thenIsFound() {
         try{
             //give
-            accountingEntry = giveAccountingEntryMock(
+            AccountingEntry accountingEntry = giveAccountingEntryMock(
                     "test_label",
                     giveAccountingBookMock( "test_book_name"),
                     LocalDateTime.now()
@@ -158,6 +150,63 @@ public class AccountingEntryControllerUnitTest {
         }
     }
 
+    @Test
+    public void whenPutAccountingEntry_thenBadRequest()  {
+        try {
+            //give
+            PutAccountingEntryDto putAccountingEntryDto = mock( PutAccountingEntryDto.class );
+            //when //then
+            mockMvc.perform( put("/accountingEntry/update")
+                    .content( new ObjectMapper().writeValueAsString( putAccountingEntryDto ) )
+                    .contentType( MediaType.APPLICATION_JSON )
+                    .accept( MediaType.APPLICATION_JSON )
+            ).andExpect( status().isBadRequest() );
+
+        } catch (Exception e ){
+            fail( e.getMessage() );
+        }
+    }
+
+    @Test
+    public void whenPutAccountingEntry_thenIsOk() {
+        try{
+            //give
+            LocalDateTime dateTime = LocalDateTime.now();
+
+            AccountingBookDto accountingBookDto = giveAccountingBookDtoMock( "book_name_test" );
+            when( accountingBookDto.getId() ).thenReturn( 44L );
+
+            PutAccountingEntryDto putAccountingEntryDto = givePutAccountingEntryDtoMock(
+                    55L,
+                    "label_test",
+                    accountingBookDto,
+                    dateTime
+            );
+
+            AccountingBook accountingBook = giveAccountingBookMock( "book_name_test");
+            AccountingEntry accountingEntry = giveAccountingEntryMock(
+                    "label_test",
+                    accountingBook,
+                    dateTime
+            );
+            when( accountingEntry.getId() ).thenReturn( 55L );
+
+            when( accountingEntryService.saveAccountingEntry( any( AccountingEntry.class ) ) )
+                    .thenReturn( accountingEntry );
+
+            //when //then
+            mockMvc.perform( put("/accountingEntry/update")
+                    .content( new ObjectMapper().writeValueAsString( putAccountingEntryDto ) )
+                    .contentType( MediaType.APPLICATION_JSON )
+                    .accept( MediaType.APPLICATION_JSON )
+            )
+                    .andExpect( status().isOk() );
+
+        }catch(Exception e ){
+            fail( e.getMessage());
+        }
+    }
+
     private AccountingBook giveAccountingBookMock(String name ){
         AccountingBook accountingBookMock = mock( AccountingBook.class );
         when( accountingBookMock.getName() ).thenReturn( name );
@@ -184,5 +233,14 @@ public class AccountingEntryControllerUnitTest {
         when( accountingEntryMock.getDate() ).thenReturn( dateTime );
         when( accountingEntryMock.getAccountingBook() ).thenReturn( book );
         return accountingEntryMock;
+    }
+
+    private PutAccountingEntryDto givePutAccountingEntryDtoMock(Long id, String label, AccountingBookDto book, LocalDateTime dateTime){
+        PutAccountingEntryDto putAccountingEntryDto = mock( PutAccountingEntryDto.class );
+        when( putAccountingEntryDto.getId() ).thenReturn( id );
+        when( putAccountingEntryDto.getLabel() ).thenReturn( label );
+        when( putAccountingEntryDto.getDate() ).thenReturn( dateTime );
+        when( putAccountingEntryDto.getAccountingBook() ).thenReturn( book );
+        return putAccountingEntryDto;
     }
 }
