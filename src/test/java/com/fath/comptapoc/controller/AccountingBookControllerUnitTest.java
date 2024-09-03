@@ -1,17 +1,19 @@
 package com.fath.comptapoc.controller;
 
 import static org.hamcrest.Matchers.hasSize;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fath.comptapoc.model.dtos.AccountingBookDto;
+import com.fath.comptapoc.model.dtos.PutAccountingBookDto;
+import com.fath.comptapoc.model.dtos.PutAccountingEntryDto;
 import com.fath.comptapoc.model.entities.AccountingBook;
 import com.fath.comptapoc.services.impl.AccountingBookServiceImpl;
 import org.junit.jupiter.api.Test;
@@ -124,5 +126,46 @@ public class AccountingBookControllerUnitTest {
                 )
                 .andExpect( status().isBadRequest() )
                 .andExpect( jsonPath("$.message").value( "Name is mandatory") );
+    }
+
+    @Test
+    public void putAccountingBook_whenIsOk(){
+        try{
+            PutAccountingBookDto putAccountingBookDto = mock( PutAccountingBookDto.class );
+            when( putAccountingBookDto.getName() ).thenReturn( "book_name" );
+            when( putAccountingBookDto.getId() ).thenReturn( 44L );
+
+            when( accountingBookService.saveAccountingBook( any( AccountingBook.class ) ) )
+                    .thenReturn( accountingBook );
+
+            mockMvc.perform( put("/accountBook/update" )
+                    .content( new ObjectMapper().writeValueAsString( putAccountingBookDto ) )
+                    .contentType( MediaType.APPLICATION_JSON )
+                    .accept( MediaType.APPLICATION_JSON )
+            )
+                    .andExpect( status().isOk() );
+
+        } catch ( Exception e ){
+            fail( e.getMessage() );
+        }
+    }
+
+    @Test
+    public void whenPutAccountingBook_thenBadRequest(){
+        try{
+            //give
+            PutAccountingBookDto putAccountingBookDto = mock( PutAccountingBookDto.class );
+
+            //when then
+            mockMvc.perform( put("/accountBook/update")
+                    .content( new ObjectMapper().writeValueAsString( putAccountingBookDto ) )
+                    .contentType( MediaType.APPLICATION_JSON )
+                    .accept( MediaType.APPLICATION_JSON )
+            )
+                    .andExpect( status().isBadRequest() );
+
+        } catch ( Exception e ){
+            fail( e.getMessage() );
+        }
     }
 }
