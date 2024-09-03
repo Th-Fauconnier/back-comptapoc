@@ -1,6 +1,7 @@
 package com.fath.comptapoc.controller;
 
 import com.fath.comptapoc.model.dtos.AccountingEntryDto;
+import com.fath.comptapoc.model.dtos.PutAccountingEntryDto;
 import com.fath.comptapoc.model.entities.AccountingEntry;
 import com.fath.comptapoc.services.impl.AccountingEntryServiceImpl;
 import jakarta.validation.ConstraintViolationException;
@@ -92,6 +93,17 @@ public class AccountingEntryController {
                     HttpStatus.INTERNAL_SERVER_ERROR
             );
         }
+    }
+
+    @PutMapping("/update")
+    public ResponseEntity<?> putAccountingEntry( @Valid @RequestBody PutAccountingEntryDto accountingEntryDto ){
+        AccountingEntry accountingEntry = accountingEntryService.saveAccountingEntry(
+                convertToEntity( accountingEntryDto )
+        );
+        return new ResponseEntity<>(
+                convertToDto( accountingEntry ),
+                HttpStatus.OK
+        );
     }
 
     @DeleteMapping("/{id}")
