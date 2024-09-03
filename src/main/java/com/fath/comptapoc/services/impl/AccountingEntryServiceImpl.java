@@ -24,7 +24,9 @@ public class AccountingEntryServiceImpl implements IAccountingEntryService {
 
     @Override
     public AccountingEntry saveAccountingEntry(AccountingEntry accountingEntry) throws ConstraintViolationException {
+        System.out.println( "test2");
         isAccountingEntryValid( accountingEntry );
+        System.out.println( "test3");
         return accountingEntryRepository.save( accountingEntry );
     }
 
@@ -56,7 +58,7 @@ public class AccountingEntryServiceImpl implements IAccountingEntryService {
      *
      * @param accountingEntry as bean to check
      * @throws ConstraintViolationException
-     * if the accountingEntry isn't a valid bean, a ConstraintViolation will be threw
+     * if the accountingEntry isn't a valid bean, a ConstraintViolation will be thrown
      * constraints are define in the accountingEntry bean
      */
     private void isAccountingEntryValid( AccountingEntry accountingEntry ){
