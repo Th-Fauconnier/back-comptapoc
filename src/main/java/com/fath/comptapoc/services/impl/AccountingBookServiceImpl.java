@@ -37,6 +37,10 @@ public class AccountingBookServiceImpl implements IAccountingBookService {
         }
     }
 
+    /**
+     * Retrieve all accountingBook in the database
+     * @return Set of accountingBooks found
+     */
     public Set<AccountingBook> getAllAccountingBooks(){
         return accountingBookRepository.findAll();
     }
