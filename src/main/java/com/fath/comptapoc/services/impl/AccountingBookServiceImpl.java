@@ -22,6 +22,12 @@ public class AccountingBookServiceImpl implements IAccountingBookService {
     @Autowired
     private AccountingBookRepository accountingBookRepository;
 
+    /**
+     * Retrieve an accountingBook by his id in the database
+     * @param id as Long
+     * @return if it's existing in database, the accountingBook linked by the id
+     * @throws ClassNotFoundException if none is found with given id
+     */
     public AccountingBook getAccountingBookById(final Long id) throws ClassNotFoundException {
         Optional< AccountingBook > optionalAccountingBook = accountingBookRepository.findById( id );
         if( optionalAccountingBook.isEmpty() ) {
