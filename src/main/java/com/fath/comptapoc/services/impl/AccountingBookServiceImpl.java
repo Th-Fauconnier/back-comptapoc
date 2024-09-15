@@ -79,18 +79,35 @@ public class AccountingBookServiceImpl implements IAccountingBookService {
      *
      * @param accountingBook as bean to check
      * @throws ConstraintViolationException
-     * if the accountingBook isn't a valid bean, a ConstraintViolation will be threw
+     * if the accountingBook isn't a valid bean, a ConstraintViolation will be thrown
      * constraints are define in the accountingBook bean
      */
     private void isAccountingBookValid( AccountingBook accountingBook ) throws ConstraintViolationException {
-        Set<ConstraintViolation<AccountingBook>> violations = validator.validate( accountingBook );
 
+        AtomicBoolean isNotValid = new AtomicBoolean(false);
+        StringBuilder sb = new StringBuilder();
+
+        Set<ConstraintViolation<AccountingBook>> violations = validator.validate( accountingBook );
         if (!violations.isEmpty()) {
-            StringBuilder sb = new StringBuilder();
+            isNotValid.set(true);
             for (ConstraintViolation<AccountingBook> constraintViolation : violations) {
                 sb.append( constraintViolation.getMessage() );
             }
-            throw new ConstraintViolationException("Error occurred: " + sb.toString(), violations);
+        }
+
+        accountingBook.getAccountingEntries().forEach( accountingEntry -> {
+            Set<ConstraintViolation<AccountingEntry>> entryViolations = validator.validate( accountingEntry );
+            if( !entryViolations.isEmpty() ){
+                isNotValid.set(true);
+                for (ConstraintViolation<AccountingEntry> constraintViolation : entryViolations) {
+                    sb.append( constraintViolation.getMessage() );
+                }
+            }
+        });
+
+        if( isNotValid.get() ){
+            System.out.println( sb.toString() );
+            throw new ConstraintViolationException( "Error occurred: " + sb.toString(), violations);
         }
     }
 }
