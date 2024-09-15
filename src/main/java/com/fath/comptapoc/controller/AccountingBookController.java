@@ -4,7 +4,6 @@ import com.fath.comptapoc.model.dtos.AccountingBookDto;
 import com.fath.comptapoc.model.dtos.PutAccountingBookDto;
 import com.fath.comptapoc.model.entities.AccountingBook;
 import com.fath.comptapoc.services.impl.AccountingBookServiceImpl;
-import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,29 +28,16 @@ public class AccountingBookController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getAccountingBookById(@PathVariable Long id){
-        try{
-            AccountingBook accountingBook = accountingBookService.getAccountingBookById( id );
-            return new ResponseEntity<>(
-                    convertToDto( accountingBook ),
-                    HttpStatus.FOUND
-            );
-        } catch ( ClassNotFoundException e ) {
-            return new ResponseEntity<>(
-                    e.getMessage(),
-                    HttpStatus.NOT_FOUND
-            );
-        }catch ( Exception e ){
-            return new ResponseEntity<>(
-                    "Unespected server error",
-                    HttpStatus.SERVICE_UNAVAILABLE
-            );
-        }
+    public ResponseEntity<?> getAccountingBookById(@PathVariable Long id) throws ClassNotFoundException {
+        AccountingBook accountingBook = accountingBookService.getAccountingBookById( id );
+        return new ResponseEntity<>(
+                convertToDto( accountingBook ),
+                HttpStatus.FOUND
+        );
     }
 
     @GetMapping("/all")
     public ResponseEntity<?> getAllAccountingBooks() {
-        try{
             Set< AccountingBookDto > accountingBookDtoSet = new HashSet<>();
 
             accountingBookService.getAllAccountingBooks().forEach( accountingBook -> {
@@ -64,33 +50,15 @@ public class AccountingBookController {
                     accountingBookDtoSet,
                     HttpStatus.OK
             );
-        } catch( Exception e ){
-            return new ResponseEntity<>(
-                    e.getMessage(),
-                    HttpStatus.INTERNAL_SERVER_ERROR
-            );
-        }
     }
 
     @PostMapping("/create")
     public ResponseEntity<?> createAccountingBook( @Valid @RequestBody AccountingBookDto accountingBookDto ) {
-        try{
             AccountingBook accountingBook = accountingBookService.saveAccountingBook( convertToEntity( accountingBookDto ) );
-            return new ResponseEntity<>(
+           return new ResponseEntity<>(
                     convertToDto( accountingBook ),
                     HttpStatus.CREATED
-            );
-        } catch (ConstraintViolationException e ){
-            return new ResponseEntity<>(
-                    e.getMessage(),
-                    HttpStatus.BAD_REQUEST
-            );
-        } catch( Exception e ){
-            return new ResponseEntity<>(
-                    e.getMessage(),
-                    HttpStatus.INTERNAL_SERVER_ERROR
-            );
-        }
+           );
     }
 
     @PutMapping("/update")
@@ -108,15 +76,8 @@ public class AccountingBookController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteAccountingBook( @PathVariable Long id ){
-        try{
             accountingBookService.deleteAccountingBook( id );
             return new ResponseEntity<>( HttpStatus.OK );
-        } catch( Exception e ){
-            return new ResponseEntity<>(
-                    e.getMessage(),
-                    HttpStatus.INTERNAL_SERVER_ERROR
-            );
-        }
     }
 
     private AccountingBook convertToEntity( AccountingBookDto accountingBookDto ) {
@@ -126,4 +87,9 @@ public class AccountingBookController {
     private AccountingBookDto convertToDto( AccountingBook accountingBook ) {
         return modelMapper.map( accountingBook, AccountingBookDto.class );
     }
+
+    private AccountingBook convertToEntity( PutAccountingBookDto putAccountingBookDto) {
+        return modelMapper.map(putAccountingBookDto, AccountingBook.class );
+    }
+
 }
