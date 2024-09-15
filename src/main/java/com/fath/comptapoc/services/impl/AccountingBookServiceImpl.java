@@ -1,9 +1,10 @@
 package com.fath.comptapoc.services.impl;
 
-import com.fath.comptapoc.model.dtos.AccountingBookDto;
 import com.fath.comptapoc.model.entities.AccountingBook;
+import com.fath.comptapoc.model.entities.AccountingEntry;
 import com.fath.comptapoc.repository.AccountingBookRepository;
 import com.fath.comptapoc.services.contracts.IAccountingBookService;
+import jakarta.transaction.Transactional;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Service
 public class AccountingBookServiceImpl implements IAccountingBookService {
@@ -45,6 +47,10 @@ public class AccountingBookServiceImpl implements IAccountingBookService {
         return accountingBookRepository.findAll();
     }
 
+    /**
+     * Remove in database the accountingBook linked by id parameter, all children will be deleted by cascade
+     * @param id as Long
+     */
     public void deleteAccountingBook( final Long id) {
         accountingBookRepository.deleteById( id );
     }
@@ -55,25 +61,6 @@ public class AccountingBookServiceImpl implements IAccountingBookService {
         isAccountingBookValid( accountingBook );
 
         return accountingBookRepository.save( accountingBook  );
-    }
-
-    /**
-     *
-     * @param accountingBookDto as bean to check
-     * @throws ConstraintViolationException
-     * if the accountingBookDto isn't a valid bean, a ConstraintViolation will be threw
-     * constraints are define in the accountingBookDto bean
-     */
-    private void isAccountingBookDtoValid( AccountingBookDto accountingBookDto ) throws ConstraintViolationException {
-        Set<ConstraintViolation<AccountingBookDto>> violations = validator.validate( accountingBookDto );
-
-        if (!violations.isEmpty()) {
-            StringBuilder sb = new StringBuilder();
-            for (ConstraintViolation<AccountingBookDto> constraintViolation : violations) {
-                sb.append( constraintViolation.getMessage() );
-            }
-            throw new ConstraintViolationException("Error occurred: " + sb.toString(), violations);
-        }
     }
 
     /**
