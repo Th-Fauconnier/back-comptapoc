@@ -49,6 +49,7 @@ public class AccountingBookServiceImpl implements IAccountingBookService {
         accountingBookRepository.deleteById( id );
     }
 
+    @Transactional
     public AccountingBook saveAccountingBook( AccountingBook accountingBook ) throws ConstraintViolationException {
 
         isAccountingBookValid( accountingBook );
