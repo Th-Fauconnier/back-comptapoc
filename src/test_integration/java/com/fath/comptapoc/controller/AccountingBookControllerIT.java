@@ -110,7 +110,6 @@ public class AccountingBookControllerIT {
                 giveAnAccountingBookDto( "book_2"),
                 giveAnAccountingBookDto( "book_3")
         );
-      //  accountingBookDtos.forEach( aBook -> createAccountingBookAndGiveHisId( aBook.getName() ));
     }
 
     @Test
@@ -122,7 +121,7 @@ public class AccountingBookControllerIT {
 
         //when //then
         mockMvc.perform( put("/accountBook/update")
-                .content( new ObjectMapper().writeValueAsString( putAccountingBookDto ) )
+                .content( new ObjectMapper().writeValueAsString(putAccountingBookDto) )
                 .contentType( MediaType.APPLICATION_JSON )
                 .accept( MediaType.APPLICATION_JSON )
         )
@@ -140,7 +139,7 @@ public class AccountingBookControllerIT {
 
         //when //then
         mockMvc.perform( put("/accountBook/update")
-                        .content( new ObjectMapper().writeValueAsString( putAccountingBookDto ) )
+                        .content( new ObjectMapper().writeValueAsString(putAccountingBookDto) )
                         .contentType( MediaType.APPLICATION_JSON )
                         .accept( MediaType.APPLICATION_JSON )
                 )
@@ -161,7 +160,7 @@ public class AccountingBookControllerIT {
 
         //when then
         mockMvc.perform( put("/accountBook/update" )
-                .content( new ObjectMapper().writeValueAsString( putAccountingBookDto ) )
+                .content( new ObjectMapper().writeValueAsString(putAccountingBookDto) )
                 .contentType( MediaType.APPLICATION_JSON )
                 .accept( MediaType.APPLICATION_JSON )
         )
