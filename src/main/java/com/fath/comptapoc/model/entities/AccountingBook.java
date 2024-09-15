@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -19,6 +20,6 @@ public class AccountingBook {
     private String name;
 
     @OneToMany(mappedBy = "accountingBook", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<AccountingEntry> accountingEntries;
+    private Set<AccountingEntry> accountingEntries = new HashSet<>();
 
 }
