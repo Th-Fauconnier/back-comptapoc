@@ -1,13 +1,15 @@
 package com.fath.comptapoc.model.dtos;
 
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
-@EqualsAndHashCode(callSuper = true)
 @Data
-public class PutAccountingBookDto extends AccountingBookDto{
+public class PutAccountingBookDto {
 
     @NotNull(message = "Id is mandatory")
     private Long id;
+
+    @NotBlank(message = "Name is mandatory")
+    private String name;
 }
