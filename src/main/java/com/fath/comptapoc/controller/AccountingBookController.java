@@ -94,8 +94,12 @@ public class AccountingBookController {
     }
 
     @PutMapping("/update")
-    public ResponseEntity<?> putAccountingBook( @Valid @RequestBody PutAccountingBookDto putAccountingBookDto ){
-        AccountingBook accountingBook = accountingBookService.saveAccountingBook( convertToEntity( putAccountingBookDto ) );
+    public ResponseEntity<?> putAccountingBook( @Valid @RequestBody PutAccountingBookDto putAccountingBookDto) throws ClassNotFoundException {
+        AccountingBook accountingBookFromBdd = accountingBookService.getAccountingBookById( putAccountingBookDto.getId() );
+
+        accountingBookFromBdd.setName( putAccountingBookDto.getName() );
+
+        AccountingBook accountingBook = accountingBookService.saveAccountingBook( accountingBookFromBdd );
         return new ResponseEntity<>(
                 convertToDto( accountingBook ),
                 HttpStatus.OK
