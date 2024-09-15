@@ -130,12 +130,18 @@ public class AccountingBookControllerUnitTest {
     @Test
     public void putAccountingBook_whenIsOk(){
         try{
+            AccountingBook accountingBookFromBdd = mock( AccountingBook.class );
+            when( accountingBookFromBdd.getId() ).thenReturn( 44L );
+
             PutAccountingBookDto putAccountingBookDto = mock( PutAccountingBookDto.class );
             when( putAccountingBookDto.getName() ).thenReturn( "book_name" );
             when( putAccountingBookDto.getId() ).thenReturn( 44L );
 
+            when( accountingBookService.getAccountingBookById( anyLong() ) )
+                    .thenReturn( accountingBookFromBdd );
             when( accountingBookService.saveAccountingBook( any( AccountingBook.class ) ) )
                     .thenReturn( accountingBook );
+
 
             mockMvc.perform( put("/accountBook/update" )
                     .content( new ObjectMapper().writeValueAsString( putAccountingBookDto ) )
@@ -157,7 +163,7 @@ public class AccountingBookControllerUnitTest {
 
             //when then
             mockMvc.perform( put("/accountBook/update")
-                    .content( new ObjectMapper().writeValueAsString( putAccountingBookDto ) )
+                    .content( new ObjectMapper().writeValueAsString(putAccountingBookDto) )
                     .contentType( MediaType.APPLICATION_JSON )
                     .accept( MediaType.APPLICATION_JSON )
             )
