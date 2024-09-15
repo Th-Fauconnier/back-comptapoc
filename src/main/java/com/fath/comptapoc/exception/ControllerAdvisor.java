@@ -33,4 +33,13 @@ public class ControllerAdvisor {
          return new ResponseEntity<>( body, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler( ClassNotFoundException.class )
+    protected ResponseEntity<Object> handleNotFoundException( ClassNotFoundException e ){
+        return new ResponseEntity<>( e.getMessage(), HttpStatus.NOT_FOUND );
+    }
+
+    @ExceptionHandler( Exception.class )
+    protected ResponseEntity<Object> handleException (Exception e ){
+       return new ResponseEntity<>( e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR );
+    }
 }
