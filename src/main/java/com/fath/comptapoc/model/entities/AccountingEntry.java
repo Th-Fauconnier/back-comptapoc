@@ -34,10 +34,10 @@ public class AccountingEntry {
     private LocalDateTime date;
 
     @NotNull(message = "AccountingBook is mandatory")
-    @ManyToOne( cascade = CascadeType.PERSIST)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "bookId")
     private AccountingBook accountingBook;
 
-    @OneToMany(mappedBy = "accountingEntry")
+   @OneToMany(fetch = FetchType.LAZY, mappedBy = "accountingEntry")
     private Set<Operation> operations;
 }
