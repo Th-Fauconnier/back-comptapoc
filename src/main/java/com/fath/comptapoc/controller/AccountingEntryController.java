@@ -30,23 +30,11 @@ public class AccountingEntryController {
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getAccountingEntryById(@PathVariable Long id) throws ClassNotFoundException {
-        try{
             AccountingEntry accountingEntry = accountingEntryService.getAccountingEntryById( id );
             return new ResponseEntity<>(
                     convertToDto( accountingEntry ),
                     HttpStatus.FOUND
             );
-        } catch ( ClassNotFoundException e ) {
-            return new ResponseEntity<>(
-                    e.getMessage(),
-                    HttpStatus.NOT_FOUND
-            );
-        } catch( Exception e ){
-           return new ResponseEntity<>(
-                   e.getMessage(),
-                   HttpStatus.INTERNAL_SERVER_ERROR
-           );
-        }
     }
 
     @GetMapping("/all")

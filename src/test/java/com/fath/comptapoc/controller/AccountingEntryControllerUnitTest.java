@@ -36,6 +36,9 @@ public class AccountingEntryControllerUnitTest {
     @MockBean
     private AccountingEntryServiceImpl accountingEntryService;
 
+    @MockBean
+    private AccountingBookServiceImpl accountingBookService;
+
     @Test
     public void getAccountingEntryByID_thenNotFound(){
         try{
@@ -78,7 +81,7 @@ public class AccountingEntryControllerUnitTest {
         try {
             //give
             AccountingBook accountingBookMock = giveAccountingBookMock("test_book_1");
-            Set<AccountingEntry> accountingEntries = Set.of(
+            List<AccountingEntry> accountingEntries = List.of(
                     giveAccountingEntryMock("test_entry_1", accountingBookMock, LocalDateTime.now() ),
                     giveAccountingEntryMock("test_entry_2", accountingBookMock, LocalDateTime.now()),
                     giveAccountingEntryMock("test_entry_3", accountingBookMock, LocalDateTime.now())

@@ -41,7 +41,7 @@ public class AccountingBookServiceImpl implements IAccountingBookService {
      * Retrieve all accountingBook in the database
      * @return Set of accountingBooks found
      */
-    public Set<AccountingBook> getAllAccountingBooks(){
+    public List<AccountingBook> getAllAccountingBooks(){
         return accountingBookRepository.findAll();
     }
 
@@ -55,7 +55,7 @@ public class AccountingBookServiceImpl implements IAccountingBookService {
 
     @Transactional
     public AccountingBook saveAccountingBook( AccountingBook accountingBook ) throws ConstraintViolationException {
-        accountingBook.setAccountingEntries( new HashSet<>());
+        accountingBook.setAccountingEntries( new ArrayList<>());
         isAccountingBookValid( accountingBook );
 
         return accountingBookRepository.save( accountingBook  );

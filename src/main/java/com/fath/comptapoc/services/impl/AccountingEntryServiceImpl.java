@@ -31,7 +31,7 @@ public class AccountingEntryServiceImpl implements IAccountingEntryService {
     }
 
     @Override
-    public Set<AccountingEntry> getAll() {
+    public List<AccountingEntry> getAll() {
         return accountingEntryRepository.findAll();
     }
 

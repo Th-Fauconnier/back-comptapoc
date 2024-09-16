@@ -11,6 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -127,7 +128,7 @@ public class AccountingBookServiceIT {
 
             accountingBooks.forEach( ac -> accountingService.saveAccountingBook( ac ));
 
-            Set<AccountingBook> accountingBooksFromBdd = accountingService.getAllAccountingBooks();
+            List<AccountingBook> accountingBooksFromBdd = accountingService.getAllAccountingBooks();
 
             assertEquals( accountingBooksFromBdd.size(), 3);
             assertTrue( accountingBooksFromBdd.containsAll( accountingBooks ) ) ;

@@ -12,7 +12,7 @@ import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
-import java.util.Set;
+import java.util.List;
 
 @Entity
 @Table
@@ -38,6 +38,6 @@ public class AccountingEntry {
     @JoinColumn(name = "bookId")
     private AccountingBook accountingBook;
 
-   @OneToMany(fetch = FetchType.LAZY, mappedBy = "accountingEntry")
-    private Set<Operation> operations;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "accountingEntry")
+    private List<Operation> operations;
 }

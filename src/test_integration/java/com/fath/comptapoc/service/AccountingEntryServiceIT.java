@@ -11,6 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -114,7 +115,7 @@ public class AccountingEntryServiceIT {
             accountingEntries.forEach( ae -> accountingEntryService.saveAccountingEntry( ae ) );
 
             //when
-            Set<AccountingEntry> accountingEntriesFromDB = accountingEntryService.getAll();
+            List<AccountingEntry> accountingEntriesFromDB = accountingEntryService.getAll();
 
             //then
             assertEquals( accountingEntriesFromDB.size(), accountingEntries.size() );

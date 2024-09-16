@@ -23,7 +23,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
-import java.util.Set;
+import java.util.List;
 
 @WebMvcTest(AccountingBookController.class )
 public class AccountingBookControllerUnitTest {
@@ -70,7 +70,7 @@ public class AccountingBookControllerUnitTest {
         AccountingBook mockedAccount_2 = mock(AccountingBook.class);
         when( mockedAccount_2.getName() ).thenReturn( "mockedAccount_2");
 
-        Set< AccountingBook > accountingBookSet = Set.of( mockedAccount_1, mockedAccount_2 );
+        List< AccountingBook > accountingBookSet = List.of( mockedAccount_1, mockedAccount_2 );
         when( accountingBookService.getAllAccountingBooks() )
                 .thenReturn( accountingBookSet );
         //then
@@ -83,7 +83,7 @@ public class AccountingBookControllerUnitTest {
     public void getAllAccountingBook_whenNoBooksFound() throws Exception {
         //when
         when( accountingBookService.getAllAccountingBooks() )
-                .thenReturn( Set.of());
+                .thenReturn( List.of());
         //then
         mockMvc.perform( get("/accountBook/all") )
                 .andExpect( status().isOk() )

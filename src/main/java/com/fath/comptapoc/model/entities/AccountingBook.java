@@ -3,7 +3,8 @@ package com.fath.comptapoc.model.entities;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
-import java.util.Set;
+
+import java.util.List;
 
 @Entity
 @Table
@@ -18,6 +19,6 @@ public class AccountingBook {
     private String name;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "accountingBook", orphanRemoval = true)
-    private Set<AccountingEntry> accountingEntries;
+    private List<AccountingEntry> accountingEntries;
 
 }

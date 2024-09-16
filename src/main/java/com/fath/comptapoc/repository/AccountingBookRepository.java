@@ -1,12 +1,11 @@
 package com.fath.comptapoc.repository;
 
 import com.fath.comptapoc.model.entities.AccountingBook;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.Set;
 
 @Repository
-public interface AccountingBookRepository extends CrudRepository<AccountingBook, Long> {
-    Set<AccountingBook> findAll();
+public interface AccountingBookRepository extends JpaRepository<AccountingBook, Long> {
+  //  Set<AccountingBook> findAll();
 }

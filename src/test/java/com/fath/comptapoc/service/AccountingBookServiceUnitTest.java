@@ -12,6 +12,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -72,11 +73,11 @@ public class AccountingBookServiceUnitTest {
     void getAllAccountingBook_whenEmptyList(){
         //when
         when( accountingBookRepository.findAll() )
-                .thenReturn( Set.of( ) );
+                .thenReturn( List.of( ) );
 
         //then
         try{
-            Set<AccountingBook> accountingBookSet = (Set<AccountingBook>) accountingBookRepository.findAll();
+            List<AccountingBook> accountingBookSet = (List<AccountingBook>) accountingBookRepository.findAll();
 
             assertThat( accountingBookSet.isEmpty() ).isTrue();
 
@@ -90,7 +91,7 @@ public class AccountingBookServiceUnitTest {
         //when
         when( accountingBookRepository.findAll() )
                 .thenReturn(
-                        Set.of(
+                        List.of(
                                 mock( AccountingBook.class ),
                                 mock( AccountingBook.class ),
                                 mock( AccountingBook.class )
@@ -99,7 +100,7 @@ public class AccountingBookServiceUnitTest {
 
         //then
         try{
-            Set<AccountingBook> accountingBookSet = (Set<AccountingBook>) accountingBookRepository.findAll();
+            List<AccountingBook> accountingBookSet = (List<AccountingBook>) accountingBookRepository.findAll();
 
             assertThat( accountingBookSet.size() ).isEqualTo( 3 );
 

@@ -3,13 +3,13 @@ package com.fath.comptapoc.services.contracts;
 import com.fath.comptapoc.model.entities.AccountingBook;
 import jakarta.validation.ConstraintViolationException;
 
-import java.util.Set;
+import java.util.List;
 
 public interface IAccountingBookService {
 
     AccountingBook getAccountingBookById(final Long id) throws ClassNotFoundException;
 
-    Set<AccountingBook> getAllAccountingBooks();
+    List<AccountingBook> getAllAccountingBooks();
 
     void deleteAccountingBook( final Long id);
 
