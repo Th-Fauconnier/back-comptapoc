@@ -1,6 +1,7 @@
 package com.fath.comptapoc.model.dtos;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
@@ -8,12 +9,14 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 import java.util.Set;
 
 @Data
+@EqualsAndHashCode(exclude="accountingBook")
 public class AccountingEntryDto {
 
     private Long id;
@@ -30,6 +33,7 @@ public class AccountingEntryDto {
     private LocalDateTime date;
 
     @NotNull(message = "Book is mandatory")
+    @JsonIgnoreProperties("accountingEntries")
     private AccountingBookDto accountingBook;
 
     private Set<OperationDto> operations;

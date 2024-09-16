@@ -1,12 +1,14 @@
 package com.fath.comptapoc.model.dtos;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
-import java.util.HashSet;
 import java.util.Set;
 
 @Data
+@EqualsAndHashCode(exclude="accountingEntries")
 public class AccountingBookDto {
 
     private Long id;
@@ -14,5 +16,6 @@ public class AccountingBookDto {
     @NotBlank(message = "Name is mandatory")
     private String name;
 
-    private Set<AccountingEntryDto> accountingEntries = new HashSet<>();
+    @JsonIgnoreProperties("accountingBook")
+    private Set<AccountingEntryDto> accountingEntries;
 }
