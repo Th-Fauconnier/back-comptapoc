@@ -1,7 +1,6 @@
 package com.fath.comptapoc.services.impl;
 
 import com.fath.comptapoc.model.entities.AccountingBook;
-import com.fath.comptapoc.model.entities.AccountingEntry;
 import com.fath.comptapoc.repository.AccountingBookRepository;
 import com.fath.comptapoc.services.contracts.IAccountingBookService;
 import jakarta.transaction.Transactional;
@@ -11,8 +10,7 @@ import jakarta.validation.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Service
@@ -57,11 +55,13 @@ public class AccountingBookServiceImpl implements IAccountingBookService {
 
     @Transactional
     public AccountingBook saveAccountingBook( AccountingBook accountingBook ) throws ConstraintViolationException {
-
+        accountingBook.setAccountingEntries( new HashSet<>());
         isAccountingBookValid( accountingBook );
 
         return accountingBookRepository.save( accountingBook  );
     }
+
+    //todo update method that only affects the book and not its children
 
     /**
      *
@@ -82,17 +82,6 @@ public class AccountingBookServiceImpl implements IAccountingBookService {
                 sb.append( constraintViolation.getMessage() );
             }
         }
-
-        accountingBook.getAccountingEntries().forEach( accountingEntry -> {
-            Set<ConstraintViolation<AccountingEntry>> entryViolations = validator.validate( accountingEntry );
-            if( !entryViolations.isEmpty() ){
-                isNotValid.set(true);
-                for (ConstraintViolation<AccountingEntry> constraintViolation : entryViolations) {
-                    sb.append( constraintViolation.getMessage() );
-                }
-            }
-        });
-
         if( isNotValid.get() ){
             System.out.println( sb.toString() );
             throw new ConstraintViolationException( "Error occurred: " + sb.toString(), violations);
