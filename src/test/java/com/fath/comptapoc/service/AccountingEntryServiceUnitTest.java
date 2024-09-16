@@ -12,6 +12,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -74,7 +75,7 @@ public class AccountingEntryServiceUnitTest {
     @Test
     void getAllAccountingEntry_whenEmptyList(){
         //when
-        when( accountingEntryRepository.findAll() ).thenReturn( Set.of() );
+        when( accountingEntryRepository.findAll() ).thenReturn( List.of() );
 
         //then
         try{
@@ -90,7 +91,7 @@ public class AccountingEntryServiceUnitTest {
     void getAllAccountingEntry_whenNotEmptyList(){
         //when
         when( accountingEntryRepository.findAll() ).thenReturn(
-                Set.of(
+                List.of(
                         mock( AccountingEntry.class ),
                         mock( AccountingEntry.class ),
                         mock( AccountingEntry.class )
