@@ -3,8 +3,8 @@ package com.fath.comptapoc.controller;
 import com.fath.comptapoc.model.dtos.AccountingEntryDto;
 import com.fath.comptapoc.model.dtos.PutAccountingEntryDto;
 import com.fath.comptapoc.model.entities.AccountingEntry;
+import com.fath.comptapoc.services.impl.AccountingBookServiceImpl;
 import com.fath.comptapoc.services.impl.AccountingEntryServiceImpl;
-import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +21,9 @@ public class AccountingEntryController {
 
     @Autowired
     private AccountingEntryServiceImpl accountingEntryService;
+
+    @Autowired
+    private AccountingBookServiceImpl accountingBookService;
 
     private final ModelMapper modelMapper;
 
@@ -61,8 +64,11 @@ public class AccountingEntryController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<?> createAccountingEntry(@Valid @RequestBody AccountingEntryDto accountingEntryDto ){
-        try{
+    public ResponseEntity<?> createAccountingEntry(@Valid @RequestBody AccountingEntryDto accountingEntryDto ) throws ClassNotFoundException {
+
+        //check if the book existe in bdd
+            accountingBookService.getAccountingBookById( accountingEntryDto.getAccountingBook().getId() );
+
             AccountingEntry accountingEntry = accountingEntryService.saveAccountingEntry(
                     convertToEntity( accountingEntryDto )
             );
@@ -70,17 +76,6 @@ public class AccountingEntryController {
                     convertToDto( accountingEntry ),
                     HttpStatus.CREATED
             );
-        } catch(ConstraintViolationException e ) {
-            return new ResponseEntity<>(
-                    e.getMessage(),
-                    HttpStatus.BAD_REQUEST
-            );
-        } catch(Exception e ){
-            return new ResponseEntity<>(
-                    e.getMessage(),
-                    HttpStatus.INTERNAL_SERVER_ERROR
-            );
-        }
     }
 
     @PutMapping("/update")
