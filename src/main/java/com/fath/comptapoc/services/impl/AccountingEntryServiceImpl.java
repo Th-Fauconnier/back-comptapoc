@@ -10,6 +10,7 @@ import jakarta.validation.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -24,9 +25,7 @@ public class AccountingEntryServiceImpl implements IAccountingEntryService {
 
     @Override
     public AccountingEntry saveAccountingEntry(AccountingEntry accountingEntry) throws ConstraintViolationException {
-        System.out.println( "test2");
         isAccountingEntryValid( accountingEntry );
-        System.out.println( "test3");
         return accountingEntryRepository.save( accountingEntry );
     }
 
