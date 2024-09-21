@@ -15,4 +15,5 @@ public interface IAccountingBookService {
 
     AccountingBook saveAccountingBook( AccountingBook accountingBook ) throws ConstraintViolationException;
 
+    AccountingBook putAccountingBook( AccountingBook accountingBook );
 }

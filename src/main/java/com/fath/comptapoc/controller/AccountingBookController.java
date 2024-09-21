@@ -67,7 +67,7 @@ public class AccountingBookController {
 
         accountingBookFromBdd.setName( putAccountingBookDto.getName() );
 
-        AccountingBook accountingBook = accountingBookService.saveAccountingBook( accountingBookFromBdd );
+        AccountingBook accountingBook = accountingBookService.putAccountingBook( accountingBookFromBdd );
         return new ResponseEntity<>(
                 convertToDto( accountingBook ),
                 HttpStatus.OK

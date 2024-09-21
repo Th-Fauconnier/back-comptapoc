@@ -61,6 +61,11 @@ public class AccountingBookServiceImpl implements IAccountingBookService {
         return accountingBookRepository.save( accountingBook  );
     }
 
+    public AccountingBook putAccountingBook( AccountingBook accountingBook ){
+        isAccountingBookValid( accountingBook );
+        return accountingBookRepository.save( accountingBook );
+    }
+
     //todo update method that only affects the book and not its children
 
     /**
