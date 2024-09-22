@@ -79,10 +79,11 @@ public class AccountingEntryController {
     }
 
     @PutMapping("/update")
-    public ResponseEntity<?> putAccountingEntry( @Valid @RequestBody PutAccountingEntryDto accountingEntryDto ){
-        AccountingEntry accountingEntry = accountingEntryService.saveAccountingEntry(
-                convertToEntity( accountingEntryDto )
-        );
+    public ResponseEntity<?> putAccountingEntry( @Valid @RequestBody PutAccountingEntryDto putAccountingEntryDto ) throws ClassNotFoundException {
+        AccountingEntry accountingEntryFromBdd = accountingEntryService.getAccountingEntryById(putAccountingEntryDto.getId() );
+        accountingEntryFromBdd.setLabel( putAccountingEntryDto.getLabel() );
+        accountingEntryFromBdd.setDate( putAccountingEntryDto.getDate() );
+        AccountingEntry accountingEntry = accountingEntryService.saveAccountingEntry( accountingEntryFromBdd );
         return new ResponseEntity<>(
                 convertToDto( accountingEntry ),
                 HttpStatus.OK
