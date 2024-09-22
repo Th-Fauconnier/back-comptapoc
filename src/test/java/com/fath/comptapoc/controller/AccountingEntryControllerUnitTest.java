@@ -155,16 +155,17 @@ public class AccountingEntryControllerUnitTest {
     }
 
     @Test
-    public void whenPutAccountingEntry_thenBadRequest()  {
+    public void whenPutAccountingEntry_thenNotFound()  {
         try {
             //give
             PutAccountingEntryDto putAccountingEntryDto = mock( PutAccountingEntryDto.class );
+            when( accountingEntryService.getAccountingEntryById( anyLong() ) ).thenThrow( ClassNotFoundException.class );
             //when //then
             mockMvc.perform( put("/accountingEntry/update")
                     .content( new ObjectMapper().writeValueAsString( putAccountingEntryDto ) )
                     .contentType( MediaType.APPLICATION_JSON )
                     .accept( MediaType.APPLICATION_JSON )
-            ).andExpect( status().isBadRequest() );
+            ).andExpect( status().isNotFound() );
 
         } catch (Exception e ){
             fail( e.getMessage() );
@@ -177,13 +178,12 @@ public class AccountingEntryControllerUnitTest {
             //give
             LocalDateTime dateTime = LocalDateTime.now();
 
-            AccountingBookDto accountingBookDto = giveAccountingBookDtoMock( "book_name_test" );
-            when( accountingBookDto.getId() ).thenReturn( 44L );
+      //      AccountingBookDto accountingBookDto = giveAccountingBookDtoMock( "book_name_test" );
+      //      when( accountingBookDto.getId() ).thenReturn( 44L );
 
             PutAccountingEntryDto putAccountingEntryDto = givePutAccountingEntryDtoMock(
                     55L,
                     "label_test",
-                    accountingBookDto,
                     dateTime
             );
 
@@ -195,6 +195,7 @@ public class AccountingEntryControllerUnitTest {
             );
             when( accountingEntry.getId() ).thenReturn( 55L );
 
+            when( accountingEntryService.getAccountingEntryById( anyLong() ) ).thenReturn( accountingEntry );
             when( accountingEntryService.saveAccountingEntry( any( AccountingEntry.class ) ) )
                     .thenReturn( accountingEntry );
 
@@ -239,12 +240,11 @@ public class AccountingEntryControllerUnitTest {
         return accountingEntryMock;
     }
 
-    private PutAccountingEntryDto givePutAccountingEntryDtoMock(Long id, String label, AccountingBookDto book, LocalDateTime dateTime){
+    private PutAccountingEntryDto givePutAccountingEntryDtoMock(Long id, String label, LocalDateTime dateTime){
         PutAccountingEntryDto putAccountingEntryDto = mock( PutAccountingEntryDto.class );
         when( putAccountingEntryDto.getId() ).thenReturn( id );
         when( putAccountingEntryDto.getLabel() ).thenReturn( label );
         when( putAccountingEntryDto.getDate() ).thenReturn( dateTime );
-        when( putAccountingEntryDto.getAccountingBook() ).thenReturn( book );
         return putAccountingEntryDto;
     }
 }
