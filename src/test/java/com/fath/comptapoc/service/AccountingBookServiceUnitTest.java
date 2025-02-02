@@ -145,7 +145,7 @@ public class AccountingBookServiceUnitTest {
         } catch ( Exception e )
         {
             System.out.println( e.getMessage() );
-            fail( "Unespected error");
+            fail( "Unexpected error");
         }
     }
 
