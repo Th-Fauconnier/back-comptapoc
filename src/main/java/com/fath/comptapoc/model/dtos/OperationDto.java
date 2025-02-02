@@ -1,7 +1,6 @@
 package com.fath.comptapoc.model.dtos;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
@@ -10,10 +9,11 @@ public class OperationDto {
 
     private Long id;
 
-    @NotBlank(message  = "Amount is mandatory")
+    @NotNull(message  = "Amount is mandatory")
     private int amount;
 
     @NotNull( message = "Account is mandatory")
+    @JsonIgnoreProperties("operations")
     private FinancialAccountDto financialAccount;
 
     @NotNull( message = "AccountingEntry is mandatory")
