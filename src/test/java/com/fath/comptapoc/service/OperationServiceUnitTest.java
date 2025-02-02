@@ -19,7 +19,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -83,8 +83,33 @@ public class OperationServiceUnitTest {
         when( operationRepository.findById( anyLong() ) )
                 .thenReturn(Optional.empty() );
         //then
-    //    try{
-         //todo   operationService.
-   //     }
+        try{
+            assertThrows(
+                    ClassNotFoundException.class,
+                    () -> operationService.getOperationById( anyLong() ),
+                    "Expected notFoundException to throw, but it didn't"
+            );
+        } catch(Exception e ){
+            fail( e.getMessage() );
+        }
+    }
+
+    @Test
+    void getAccoutingEntryById_whenFoundIt(){
+        try{
+            //given
+            Operation operationMock = mock( Operation.class );
+            //when
+            when( operationRepository.findById( anyLong() ) )
+                    .thenReturn( Optional.of( operationMock ) );
+
+            //then
+            assertNotNull(
+                    operationService.getOperationById( anyLong() )
+            );
+
+        } catch(Exception e ){
+            fail( e.getMessage() );
+        }
     }
 }
