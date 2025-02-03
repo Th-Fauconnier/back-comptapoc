@@ -36,5 +36,6 @@ public class AccountingEntryDto {
     @JsonIgnoreProperties("accountingEntries")
     private AccountingBookDto accountingBook;
 
+    @JsonIgnoreProperties("accountingEntry")
     private Set<OperationDto> operations;
 }
