@@ -2,6 +2,7 @@ package com.fath.comptapoc.service;
 
 import com.fath.comptapoc.model.entities.AccountingBook;
 import com.fath.comptapoc.model.entities.AccountingEntry;
+import com.fath.comptapoc.services.impl.AccountingBookServiceImpl;
 import com.fath.comptapoc.services.impl.AccountingEntryServiceImpl;
 import jakarta.transaction.Transactional;
 import jakarta.validation.ConstraintViolationException;
@@ -25,33 +26,39 @@ public class AccountingEntryServiceIT {
     @Autowired
     private AccountingEntryServiceImpl accountingEntryService;
 
+    @Autowired
+    private AccountingBookServiceImpl accountingBookService;
+
     @Test
     public void whenTestContextLoads_thenServiceTestIsNotNull(){
         assertThat( accountingEntryService ).isNotNull();
+        assertThat( accountingBookService ).isNotNull();
     }
 
     @Test
     public void whenSaveAccountingEntry_thenIsValid(){
-        //give
-        AccountingBook accountingBook = new AccountingBook();
-        accountingBook.setName( "testName_1" );
+        try{
+            //given
+            AccountingBook accountingBookSaved = createAndGiveBookFromBdd( "name_one" );
+            AccountingEntry accountingEntry = new AccountingEntry();
+            accountingEntry.setLabel( "test_label_1");
 
-        AccountingEntry accountingEntry = new AccountingEntry();
-        accountingEntry.setLabel( "test_label_1");
+            accountingEntry.setDate( LocalDateTime.now() );
+            accountingEntry.setAccountingBook( accountingBookSaved );
 
-        accountingEntry.setDate( LocalDateTime.now() );
-        accountingEntry.setAccountingBook( accountingBook );
+            //   accountingBook.addAccountingEntries( List.of( accountingEntry ) );
+            //when
+            AccountingEntry accountingEntrySaved = accountingEntryService.saveAccountingEntry( accountingEntry );
 
-        //when
-        AccountingEntry accountingEntrySaved = accountingEntryService.saveAccountingEntry( accountingEntry );
-
-        //then
-        assertEquals( accountingEntrySaved.getLabel(), accountingEntry.getLabel() );
-        assertEquals( accountingEntrySaved.getDate(), accountingEntry.getDate() );
-        assertEquals( accountingEntrySaved.getAccountingBook().getName(), accountingEntry.getAccountingBook().getName() );
-        assertThat( accountingEntry.getId() ).isNotNull();
-        assertThat( accountingEntry.getAccountingBook().getId() ).isNotNull();
-
+            //then
+            assertEquals( accountingEntrySaved.getLabel(), accountingEntry.getLabel() );
+            assertEquals( accountingEntrySaved.getDate(), accountingEntry.getDate() );
+            assertEquals( accountingEntrySaved.getAccountingBook().getName(), accountingEntry.getAccountingBook().getName() );
+            assertThat( accountingEntry.getId() ).isNotNull();
+            assertThat( accountingEntry.getAccountingBook().getId() ).isNotNull();
+        } catch (Exception e ) {
+            fail( e.getMessage() );
+        }
     }
 
     @Test
@@ -80,8 +87,7 @@ public class AccountingEntryServiceIT {
     public void whenGetAccountingEntryById_whenFound(){
         try{
             //given
-            AccountingBook accountingBook = new AccountingBook();
-            accountingBook.setName( "test_book_1" );
+            AccountingBook accountingBook = createAndGiveBookFromBdd( "test_book_1" );
             AccountingEntry accountingEntry = new AccountingEntry();
             accountingEntry.setLabel( "test_label_1" );
             accountingEntry.setDate( LocalDateTime.now() );
@@ -106,7 +112,7 @@ public class AccountingEntryServiceIT {
     public void whenGetAllEntries(){
         try{
             //given
-            AccountingBook accountingBook = giveNewAccountingBook("test_book_3");
+            AccountingBook accountingBook = createAndGiveBookFromBdd("test_book_3");
             Set<AccountingEntry> accountingEntries = Set.of(
                     giveNewAccountingEntry( "test_label_2", accountingBook),
                     giveNewAccountingEntry( "test_label_3", accountingBook),
@@ -132,7 +138,7 @@ public class AccountingEntryServiceIT {
             //give
             AccountingEntry accountingEntry = giveNewAccountingEntry(
                     "test_label_5",
-                    giveNewAccountingBook( " test_book_4")
+                    createAndGiveBookFromBdd( " test_book_4")
             );
             AccountingEntry accountingEntrySaved = accountingEntryService.saveAccountingEntry( accountingEntry );
 
@@ -151,17 +157,17 @@ public class AccountingEntryServiceIT {
         }
     }
 
-    private AccountingBook giveNewAccountingBook( String name ){
-        AccountingBook accountingBook = new AccountingBook();
-        accountingBook.setName( name );
-        return accountingBook;
-    }
-
     private AccountingEntry giveNewAccountingEntry( String label, AccountingBook book ){
         AccountingEntry accountingEntry = new AccountingEntry();
         accountingEntry.setLabel( label );
         accountingEntry.setDate( LocalDateTime.now() );
         accountingEntry.setAccountingBook( book );
         return accountingEntry;
+    }
+
+    private AccountingBook createAndGiveBookFromBdd( String bookName ) {
+        AccountingBook book = new AccountingBook();
+        book.setName( bookName );
+        return accountingBookService.saveAccountingBook( book );
     }
 }

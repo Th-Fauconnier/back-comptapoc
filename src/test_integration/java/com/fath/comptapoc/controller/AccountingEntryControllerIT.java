@@ -95,13 +95,15 @@ public class AccountingEntryControllerIT {
     @Order(1)
     public void whenCreateAccountingEntry_thenIsCreated() throws Exception {
         //give
+        AccountingBookDto accountingBookDto = createAndGiveAnAccountingBookDto( "test_book_name_1");
+
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         LocalDateTime date = LocalDateTime.now();
 
         AccountingEntryDto accountingEntryDto = new AccountingEntryDto();
         accountingEntryDto.setDate( date );
         accountingEntryDto.setLabel( "Test_label_1" );
-        accountingEntryDto.setAccountingBook( giveAnAccountingBookDto("test_book_name" ) );
+        accountingEntryDto.setAccountingBook( accountingBookDto );
 
         //when //then
         mockMvc.perform( post("/accountingEntry/create")
@@ -123,8 +125,8 @@ public class AccountingEntryControllerIT {
 
         //give
         String label = "test_label_1";
-        String bookName = "test_book_name_1";
-        Integer id = createAccountingEntryAndGiveHisId( label, bookName);
+        String bookName = "test_book_name_2";
+        Integer id = createAccountingEntryAndGiveHisId( label, bookName );
 
         //when //then
         mockMvc.perform( get("/accountingEntry/" + id ) )
@@ -140,7 +142,7 @@ public class AccountingEntryControllerIT {
     @Transactional
     public void whenDeleteAccountingEntryById_thenIsDeleted() throws Exception {
         //give
-        Integer id = createAccountingEntryAndGiveHisId( "test_label_2", "test_book_name_2");
+        Integer id = createAccountingEntryAndGiveHisId( "test_label_2", "test_book_name_3");
 
         //when //then
         mockMvc.perform( delete("/accountingEntry/" + id ) )
@@ -151,10 +153,11 @@ public class AccountingEntryControllerIT {
     }
 
     private Integer createAccountingEntryAndGiveHisId( String label, String bookName) throws Exception {
+        AccountingBookDto accountingBookDto = createAndGiveAnAccountingBookDto( bookName );
         AccountingEntryDto accountingEntryDto = giveAnAccountingEntryDto(
                 label,
                 LocalDateTime.now(),
-                giveAnAccountingBookDto( bookName )
+                accountingBookDto
         );
         MvcResult result = mockMvc.perform( post("/accountingEntry/create" )
                 .content( new ObjectMapper().writeValueAsString( accountingEntryDto ) )
@@ -173,9 +176,31 @@ public class AccountingEntryControllerIT {
         return accountingEntryDto;
 
     }
-    private AccountingBookDto giveAnAccountingBookDto( String name ){
+
+    private AccountingBookDto giveAnAccountingBookDto(String name ){
         AccountingBookDto accountingBookDto = new AccountingBookDto();
         accountingBookDto.setName( name );
+        return accountingBookDto;
+    }
+
+    private AccountingBookDto createAndGiveAnAccountingBookDto( String bookName ) throws Exception {
+
+        AccountingBookDto accountingBookDto = giveAnAccountingBookDto( bookName );
+
+        //extraire id
+        MvcResult mvcResult = mockMvc.perform( post("/accountBook/create")
+                        .content( new ObjectMapper().writeValueAsString( accountingBookDto) )
+                        .contentType( MediaType.APPLICATION_JSON )
+                        .accept( MediaType.APPLICATION_JSON )
+                ).andExpect( status().isCreated() )
+                .andExpect( jsonPath("$.id").exists() )
+                .andExpect( jsonPath( "$.name").value( accountingBookDto.getName() ) )
+                .andReturn();
+
+        String response = mvcResult.getResponse().getContentAsString();
+        Integer id = JsonPath.parse(response).read("$.id");
+
+        accountingBookDto.setId( id.longValue() );
         return accountingBookDto;
     }
 }
