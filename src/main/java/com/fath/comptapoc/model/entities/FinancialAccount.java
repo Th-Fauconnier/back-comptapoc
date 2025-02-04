@@ -18,10 +18,10 @@ public class FinancialAccount {
     @GeneratedValue
     private Long id;
 
-    @NotBlank
+    @NotBlank(message = "Name is mandatory")
     private String name;
 
-    @NotBlank
+    @NotBlank(message = "Code is mandatory")
     private int code;
 
     @OneToMany(mappedBy = "financialAccount")
