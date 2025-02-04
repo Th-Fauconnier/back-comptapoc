@@ -5,6 +5,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.util.Set;
@@ -21,7 +22,7 @@ public class FinancialAccount {
     @NotBlank(message = "Name is mandatory")
     private String name;
 
-    @NotBlank(message = "Code is mandatory")
+    @NotNull(message = "Code is mandatory")
     private int code;
 
     @OneToMany(mappedBy = "financialAccount")

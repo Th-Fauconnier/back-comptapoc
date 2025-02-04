@@ -1,7 +1,6 @@
 package com.fath.comptapoc.model.entities;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
@@ -14,7 +13,7 @@ public class Operation {
     @GeneratedValue
     private Long id;
 
-    @NotBlank(message  = "Amount is mandatory")
+    @NotNull(message  = "Amount is mandatory")
     private int amount;
 
     @NotNull( message = "Account is mandatory")
@@ -26,7 +25,4 @@ public class Operation {
     @ManyToOne
     @JoinColumn(name="entryId")
     private AccountingEntry accountingEntry;
-  //  @ManyToOne
- //   @JoinColumn(name = "account_id", nullable = false)
- //   private FinancialAccount account;
 }
