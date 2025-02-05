@@ -102,6 +102,45 @@ public class FinancialAccountControllerUnitTest {
     }
 
     @Test
+    public void updateFinancialAccount_thenBadRequest(){
+        try{
+            //given
+            FinancialAccountDto financialAccountDto = mock( FinancialAccountDto.class );
+
+            //when //then
+            mockMvc.perform( post("/financialAccount/update")
+                    .content( new ObjectMapper().writeValueAsString( financialAccountDto ) )
+                    .contentType( MediaType.APPLICATION_JSON )
+                    .accept( MediaType.APPLICATION_JSON )
+            ).andExpect( status().isBadRequest() );
+        } catch( Exception e ){
+            fail(e.getMessage() );
+        }
+    }
+
+    @Test
+    public void updateFinancialAccount_thenIsOk(){
+        try{
+            //given
+            FinancialAccountDto financialAccountDtoMock = mock( FinancialAccountDto.class );
+            FinancialAccount financialAccountMock = mock( FinancialAccount.class );
+
+            //when
+            when( financialAccountService.saveFinancialAccount( any( FinancialAccount.class ) ) )
+                    .thenReturn( financialAccountMock );
+
+            //then
+            mockMvc.perform( post("/financialAccount/update")
+                    .content( new ObjectMapper().writeValueAsString( financialAccountDtoMock ) )
+                    .contentType( MediaType.APPLICATION_JSON )
+                    .accept( MediaType.APPLICATION_JSON )
+            ).andExpect( status().isOk() );
+        } catch( Exception e ){
+            fail( e.getMessage() );
+        }
+    }
+
+    @Test
     public void deleteFinancialAccount_thenIsOk(){
         try{
 
