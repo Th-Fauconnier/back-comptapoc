@@ -14,7 +14,6 @@ import java.util.Set;
 @Data
 public class FinancialAccount {
 
-    //todo faire les tests sur model/service/controller
     @Id
     @GeneratedValue
     private Long id;

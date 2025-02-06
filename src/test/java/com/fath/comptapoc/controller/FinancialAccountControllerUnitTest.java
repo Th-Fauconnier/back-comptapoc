@@ -33,7 +33,12 @@ public class FinancialAccountControllerUnitTest {
         try{
             //given
             FinancialAccountDto financialAccountDtoMock = mock( FinancialAccountDto.class );
+            when( financialAccountDtoMock.getName() ).thenReturn( "name_account" );
+            when( financialAccountDtoMock.getCode() ).thenReturn( 55455 );
             FinancialAccount financialAccountMock = mock( FinancialAccount.class );
+            when( financialAccountMock.getName() ).thenReturn( "name_account" );
+            when( financialAccountMock.getCode() ).thenReturn( 55455 );
+            when( financialAccountMock.getId() ).thenReturn( 5L );
 
             //when
             when( financialAccountService.saveFinancialAccount( any( FinancialAccount.class ) ) )
@@ -76,7 +81,7 @@ public class FinancialAccountControllerUnitTest {
                     .thenThrow( ClassNotFoundException.class );
             //then//when
             mockMvc.perform( get("/financialAccount/565") )
-                    .andExpect( status().isFound() );
+                    .andExpect( status().isNotFound() );
 
         } catch( Exception e ){
             fail( e.getMessage() );
@@ -108,7 +113,7 @@ public class FinancialAccountControllerUnitTest {
             FinancialAccountDto financialAccountDto = mock( FinancialAccountDto.class );
 
             //when //then
-            mockMvc.perform( post("/financialAccount/update")
+            mockMvc.perform( put("/financialAccount/update")
                     .content( new ObjectMapper().writeValueAsString( financialAccountDto ) )
                     .contentType( MediaType.APPLICATION_JSON )
                     .accept( MediaType.APPLICATION_JSON )
@@ -123,14 +128,21 @@ public class FinancialAccountControllerUnitTest {
         try{
             //given
             FinancialAccountDto financialAccountDtoMock = mock( FinancialAccountDto.class );
+            when( financialAccountDtoMock.getName() ).thenReturn( "name_account" );
+            when( financialAccountDtoMock.getCode() ).thenReturn( 55455 );
             FinancialAccount financialAccountMock = mock( FinancialAccount.class );
+            when( financialAccountMock.getName() ).thenReturn( "name_account" );
+            when( financialAccountMock.getCode() ).thenReturn( 55455 );
+            when( financialAccountMock.getId() ).thenReturn( 5L );
 
             //when
+            when( financialAccountService.getFinancialAccountById( anyLong() ) )
+                    .thenReturn( financialAccountMock );
             when( financialAccountService.saveFinancialAccount( any( FinancialAccount.class ) ) )
                     .thenReturn( financialAccountMock );
 
             //then
-            mockMvc.perform( post("/financialAccount/update")
+            mockMvc.perform( put("/financialAccount/update")
                     .content( new ObjectMapper().writeValueAsString( financialAccountDtoMock ) )
                     .contentType( MediaType.APPLICATION_JSON )
                     .accept( MediaType.APPLICATION_JSON )
