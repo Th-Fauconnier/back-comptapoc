@@ -134,7 +134,7 @@ public class FinancialAccountControllerIT {
             //given
             int accountId = createFinancialAccountAndGiveHisId( "account_name_4", 42875 );
             //when //then
-            mockMvc.perform( delete("/fincancialAccount/" + accountId ) )
+            mockMvc.perform( delete("/financialAccount/" + accountId ) )
                     .andExpect( status().isOk() );
         } catch(Exception e){
             fail( e.getMessage() );
