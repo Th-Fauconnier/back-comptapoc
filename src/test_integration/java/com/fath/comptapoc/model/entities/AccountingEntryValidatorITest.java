@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -101,6 +102,42 @@ public class AccountingEntryValidatorITest {
         } else {
             fail( "ConstraintVilationException expected not throwing" );
         }
+    }
+
+    @Test
+    public void whenValidationEntry_whenEntryHaventOperations(){
+      AccountingEntry accountingEntry = new AccountingEntry();
+      accountingEntry.setLabel( "entry_label");
+      accountingEntry.setDate( LocalDateTime.now() );
+      accountingEntry.setAccountingBook( accountingBook );
+
+        violations = validator.validate( accountingEntry );
+
+        if( violations.size() == 1 ){
+            violations.forEach( c -> assertThat( c.getMessage() ).isEqualTo( "Operation list is mandatory" ) );
+        } else {
+            fail( "ConstraintVilationException expected not throwing" );
+        }
+
+      accountingEntry.setOperations( new ArrayList<>() );
+
+      violations = validator.validate( accountingEntry );
+
+        if( violations.size() == 1 ){
+            violations.forEach( c -> assertThat( c.getMessage() ).isEqualTo( "Operation list must have two or more operation" ) );
+        } else {
+            fail( "ConstraintVilationException expected not throwing" );
+        }
+    }
+
+    @Test
+    public void whenValidationEntry_whenEntryOperationsIsntBalanced(){
+        AccountingEntry accountingEntry = new AccountingEntry();
+        accountingEntry.setLabel( "entry_label");
+        accountingEntry.setDate( LocalDateTime.now() );
+
+        violations = validator.validate( accountingEntry );
+        //todo add custom validator for test the needed nul balance of operationList
     }
 
 }
