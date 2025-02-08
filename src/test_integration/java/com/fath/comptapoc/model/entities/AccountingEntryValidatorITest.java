@@ -41,14 +41,63 @@ public class AccountingEntryValidatorITest {
             accountingEntry.setDate( LocalDateTime.now() );
             accountingEntry.setAccountingBook( accountingBook );
 
+            FinancialAccount financialAccount = new FinancialAccount();
+            financialAccount.setCode( 444 );
+            financialAccount.setName( "account_name" );
+
+            Operation operation1 = new Operation();
+            operation1.setFinancialAccount( financialAccount );
+            operation1.setAmount( 450 );
+            operation1.setAccountingEntry( accountingEntry );
+
+            Operation operation2 = new Operation();
+            operation2.setFinancialAccount( financialAccount );
+            operation2.setAmount( -450 );
+            operation2.setAccountingEntry( accountingEntry );
+
+            accountingEntry.getOperations().add( operation1 );
+            accountingEntry.getOperations().add( operation2 );
+
             violations = validator.validate( accountingEntry );
 
             assertTrue( violations.isEmpty() );
-           /* if( violations.isEmpty() ) {
-                assertThat( accountingEntry.getLabel() ).isEqualTo( "testLabel" );
+        } catch (Exception e ){
+            fail( e.getMessage() );
+        }
+    }
+
+    @Test
+    public void accountingEntryValidator_whenBalanceIsNotValid(){
+        try{
+            AccountingEntry accountingEntry = new AccountingEntry();
+            accountingEntry.setLabel( "testLabel" );
+            accountingEntry.setDate( LocalDateTime.now() );
+            accountingEntry.setAccountingBook( accountingBook );
+
+            FinancialAccount financialAccount = new FinancialAccount();
+            financialAccount.setCode( 444 );
+            financialAccount.setName( "account_name" );
+
+            Operation operation1 = new Operation();
+            operation1.setFinancialAccount( financialAccount );
+            operation1.setAmount( 451 );
+            operation1.setAccountingEntry( accountingEntry );
+
+            Operation operation2 = new Operation();
+            operation2.setFinancialAccount( financialAccount );
+            operation2.setAmount( -450 );
+            operation2.setAccountingEntry( accountingEntry );
+
+            accountingEntry.getOperations().add( operation1 );
+            accountingEntry.getOperations().add( operation2 );
+
+            violations = validator.validate( accountingEntry );
+
+            if( violations.size() == 1 ){
+                violations.forEach( c -> assertThat( c.getMessage() ).isEqualTo( "The balance of entry's operations isn't null" ) );
             } else {
-                fail( "unexpected constraintViolationException has been throwed" );
-            }*/
+                fail( "ConstraintVilationException expected not throwing" );
+            }
         } catch (Exception e ){
             fail( e.getMessage() );
         }

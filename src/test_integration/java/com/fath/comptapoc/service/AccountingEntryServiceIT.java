@@ -2,8 +2,11 @@ package com.fath.comptapoc.service;
 
 import com.fath.comptapoc.model.entities.AccountingBook;
 import com.fath.comptapoc.model.entities.AccountingEntry;
+import com.fath.comptapoc.model.entities.FinancialAccount;
+import com.fath.comptapoc.model.entities.Operation;
 import com.fath.comptapoc.services.impl.AccountingBookServiceImpl;
 import com.fath.comptapoc.services.impl.AccountingEntryServiceImpl;
+import com.fath.comptapoc.services.impl.FinancialAccountServiceImpl;
 import jakarta.transaction.Transactional;
 import jakarta.validation.ConstraintViolationException;
 import org.junit.jupiter.api.Test;
@@ -29,10 +32,14 @@ public class AccountingEntryServiceIT {
     @Autowired
     private AccountingBookServiceImpl accountingBookService;
 
+    @Autowired
+    private FinancialAccountServiceImpl financialAccountService;
+
     @Test
     public void whenTestContextLoads_thenServiceTestIsNotNull(){
         assertThat( accountingEntryService ).isNotNull();
         assertThat( accountingBookService ).isNotNull();
+        assertThat( financialAccountService ).isNotNull();
     }
 
     @Test
@@ -46,7 +53,10 @@ public class AccountingEntryServiceIT {
             accountingEntry.setDate( LocalDateTime.now() );
             accountingEntry.setAccountingBook( accountingBookSaved );
 
-            //   accountingBook.addAccountingEntries( List.of( accountingEntry ) );
+            FinancialAccount account1 = createAndGiveFinancialAccount( 456, "account_1");
+            FinancialAccount account2 = createAndGiveFinancialAccount( 556, "account_2");
+            addOperation( 450, account1, accountingEntry );
+            addOperation( -450, account2, accountingEntry );
             //when
             AccountingEntry accountingEntrySaved = accountingEntryService.saveAccountingEntry( accountingEntry );
 
@@ -63,6 +73,29 @@ public class AccountingEntryServiceIT {
 
     @Test
     public void whenSaveAccountingEntry_thenIsNoValid(){
+        assertThrows(
+                ConstraintViolationException.class,
+                () -> accountingEntryService.saveAccountingEntry( new AccountingEntry() ),
+                "Expected ConstraintViolationException to throw, but it didn't"
+        );
+    }
+
+    @Test
+    public void whenSaveAccountingEntry_thenEntryBalanceIsNotValid(){
+        //given
+        AccountingBook accountingBookSaved = createAndGiveBookFromBdd( "name_one" );
+        AccountingEntry accountingEntry = new AccountingEntry();
+        accountingEntry.setLabel( "test_label_1");
+
+        accountingEntry.setDate( LocalDateTime.now() );
+        accountingEntry.setAccountingBook( accountingBookSaved );
+
+        FinancialAccount account1 = createAndGiveFinancialAccount( 456, "account_1");
+        FinancialAccount account2 = createAndGiveFinancialAccount( 556, "account_2");
+        addOperation( 451, account1, accountingEntry );
+        addOperation( -450, account2, accountingEntry );
+
+        //when //then
         assertThrows(
                 ConstraintViolationException.class,
                 () -> accountingEntryService.saveAccountingEntry( new AccountingEntry() ),
@@ -93,6 +126,11 @@ public class AccountingEntryServiceIT {
             accountingEntry.setDate( LocalDateTime.now() );
             accountingEntry.setAccountingBook( accountingBook );
 
+            FinancialAccount account1 = createAndGiveFinancialAccount( 456, "account_1");
+            FinancialAccount account2 = createAndGiveFinancialAccount( 556, "account_2");
+            addOperation( 450, account1, accountingEntry );
+            addOperation( -450, account2, accountingEntry );
+
             AccountingEntry accountingEntrySaved = accountingEntryService.saveAccountingEntry( accountingEntry );
 
             //when
@@ -118,7 +156,14 @@ public class AccountingEntryServiceIT {
                     giveNewAccountingEntry( "test_label_3", accountingBook),
                     giveNewAccountingEntry( "test_label_4", accountingBook)
             );
-            accountingEntries.forEach( ae -> accountingEntryService.saveAccountingEntry( ae ) );
+            accountingEntries.forEach( ae -> {
+                FinancialAccount account1 = createAndGiveFinancialAccount( 456, "account_1");
+                FinancialAccount account2 = createAndGiveFinancialAccount( 556, "account_2");
+                addOperation( 450, account1, ae );
+                addOperation( -450, account2, ae );
+
+                accountingEntryService.saveAccountingEntry( ae );
+            } );
 
             //when
             List<AccountingEntry> accountingEntriesFromDB = accountingEntryService.getAll();
@@ -140,6 +185,11 @@ public class AccountingEntryServiceIT {
                     "test_label_5",
                     createAndGiveBookFromBdd( " test_book_4")
             );
+            FinancialAccount account1 = createAndGiveFinancialAccount( 456, "account_1");
+            FinancialAccount account2 = createAndGiveFinancialAccount( 556, "account_2");
+            addOperation( 450, account1, accountingEntry );
+            addOperation( -450, account2, accountingEntry );
+
             AccountingEntry accountingEntrySaved = accountingEntryService.saveAccountingEntry( accountingEntry );
 
             //when
@@ -169,5 +219,21 @@ public class AccountingEntryServiceIT {
         AccountingBook book = new AccountingBook();
         book.setName( bookName );
         return accountingBookService.saveAccountingBook( book );
+    }
+
+    private void addOperation(int amount, FinancialAccount account, AccountingEntry entry ){
+        Operation operation = new Operation();
+        operation.setAmount( amount );
+        operation.setFinancialAccount( account );
+
+        operation.setAccountingEntry( entry );
+        entry.getOperations().add( operation );
+    }
+
+    private FinancialAccount createAndGiveFinancialAccount( int code, String name ){
+        FinancialAccount financialAccount = new FinancialAccount();
+        financialAccount.setCode( code );
+        financialAccount.setName( name );
+        return financialAccountService.saveFinancialAccount( financialAccount );
     }
 }
