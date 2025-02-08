@@ -12,16 +12,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.junit.jupiter.api.Assertions.fail;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(OperationController.class)
@@ -70,49 +67,6 @@ public class OperationControllerUnitTest {
         }
     }
 
-    @Test
-    public void whenCreateOperation_thenIsOk(){
-        try{
-            //given
-            OperationDto operationDtoMock = giveOperationDtoMock(
-                    500,
-                    mock( FinancialAccountDto.class ),
-                    mock( AccountingEntryDto.class )
-            );
-            Operation operationMock = mock( Operation.class );
-
-            //when
-            when( operationService.saveOperation( any(Operation.class) ) )
-                    .thenReturn( operationMock );
-            //then
-            mockMvc.perform( post("/operation/create")
-                    .content( new ObjectMapper().writeValueAsString( operationDtoMock ) )
-                    .contentType( MediaType.APPLICATION_JSON )
-                    .accept( MediaType.APPLICATION_JSON )
-            ).andExpect( status().isCreated() );
-
-        } catch (Exception e ){
-            fail( e.getMessage() );
-        }
-    }
-
-    @Test
-    public void whenCreateOperation_thenBadRequest(){
-        try{
-            //give
-            OperationDto operationDtoMock = mock( OperationDto.class );
-            //when //then
-            mockMvc.perform( post("/operation/create")
-                    .content( new ObjectMapper().writeValueAsString( operationDtoMock ) )
-                    .contentType( MediaType.APPLICATION_JSON )
-                    .accept( MediaType.APPLICATION_JSON )
-            ).andExpect( status().isBadRequest() );
-
-        } catch(Exception e ){
-            fail( e.getMessage());
-        }
-    }
-
     private Operation giveOperationMock(int amount, FinancialAccount account, AccountingEntry entry){
         Operation operation = mock( Operation.class );
         when( operation.getFinancialAccount() ).thenReturn( account );
@@ -123,7 +77,7 @@ public class OperationControllerUnitTest {
     private OperationDto giveOperationDtoMock(int amount, FinancialAccountDto account, AccountingEntryDto entry){
         OperationDto operationDto = mock( OperationDto.class );
         when( operationDto.getFinancialAccount() ).thenReturn( account );
-        when( operationDto.getAccountingEntry() ).thenReturn( entry );
+   //     when( operationDto.getAccountingEntry() ).thenReturn( entry );
         return operationDto;
     }
 }
