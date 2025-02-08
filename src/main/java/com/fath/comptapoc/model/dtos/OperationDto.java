@@ -16,7 +16,4 @@ public class OperationDto {
     @JsonIgnoreProperties("operations")
     private FinancialAccountDto financialAccount;
 
-    @NotNull( message = "AccountingEntry is mandatory")
-    @JsonIgnoreProperties("operations")
-    private AccountingEntryDto accountingEntry;
 }
