@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
+import com.fath.comptapoc.config.constraints.EntryBalance;
 import jakarta.persistence.*;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
@@ -12,6 +13,7 @@ import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -41,5 +43,6 @@ public class AccountingEntry {
     @NotNull(message = "Operation list is mandatory")
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "accountingEntry")
     @Size(min=2, message = "Operation list must have two or more operation" )
-    private List<@Valid Operation> operations;
+    @EntryBalance
+    private List<@Valid Operation> operations = new ArrayList<>();
 }
