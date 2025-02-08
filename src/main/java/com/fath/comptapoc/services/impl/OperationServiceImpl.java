@@ -22,12 +22,6 @@ public class OperationServiceImpl implements IOperationService {
     private OperationRepository operationRepository;
 
     @Override
-    public Operation saveOperation(Operation operation) throws ConstraintViolationException {
-        isOperationValid( operation );
-        return operationRepository.save( operation );
-    }
-
-    @Override
     public Operation getOperationById(Long id) throws ClassNotFoundException {
         Optional< Operation > optionalOperation = operationRepository.findById( id );
         if( optionalOperation.isEmpty() ) {
