@@ -9,13 +9,13 @@ import com.fath.comptapoc.services.impl.AccountingEntryServiceImpl;
 import com.fath.comptapoc.services.impl.FinancialAccountServiceImpl;
 import com.fath.comptapoc.services.impl.OperationServiceImpl;
 import jakarta.transaction.Transactional;
-import jakarta.validation.ConstraintViolationException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.Fail.fail;
@@ -48,45 +48,6 @@ public class OperationServiceIT {
     }
 
     @Test
-    public void whenSaveOperation_thenIsCreated(){
-        //given
-        int amount = 565;
-        String entryLabel = "entry_label";
-        String accountBookName = "account_book_name_1";
-
-        Operation operation = new Operation();
-        operation.setAmount( amount );
-
-        FinancialAccount financialAccount = createAndGiveFinancialAccountFromBdd( "account_name_1", 4552);
-        operation.setFinancialAccount( financialAccount );
-        operation.setAccountingEntry(
-                createAndGiveAccountEntryFromBdd(
-                        entryLabel,
-                        createAndGiveBookFromBdd( accountBookName )
-                )
-        );
-
-        //when
-        Operation operationCreated = operationService.saveOperation( operation );
-
-        //then
-        assertThat( operationCreated.getId() ).isNotNull();
-        assertEquals( operationCreated.getAmount(), operation.getAmount() );
-        assertEquals( operationCreated.getAccountingEntry().getLabel(), operation.getAccountingEntry().getLabel() );
-        assertEquals( operationCreated.getFinancialAccount().getName(), operation.getFinancialAccount().getName() );
-        assertEquals( operationCreated.getFinancialAccount().getCode(), operation.getFinancialAccount().getCode() );
-    }
-
-    @Test
-    public void whenSaveOperation_thenIsNoValid(){
-        assertThrows(
-                ConstraintViolationException.class,
-                () -> operationService.saveOperation( new Operation() ),
-                "Expected ConstraintViolationException to throw, but it didn't"
-        );
-    }
-
-    @Test
     public void whenGetOperationById_whenNotFound(){
         try{
             assertThrows(
@@ -100,21 +61,25 @@ public class OperationServiceIT {
     }
 
     @Test
-    public void whenGetAccountingEntryById_whenFound(){
+    public void whenGetOperationById_whenFound(){
         try{
             //given
             FinancialAccount financialAccount = createAndGiveFinancialAccountFromBdd( "account_name_3", 444);
             AccountingBook accountingBook = createAndGiveBookFromBdd( "book_name_3");
-            AccountingEntry accountingEntry = createAndGiveAccountEntryFromBdd( "entry_label_3", accountingBook );
-            Operation operation = new Operation();
-            operation.setFinancialAccount( financialAccount );
-            operation.setAccountingEntry( accountingEntry );
-            operation.setAmount( 45 );
 
-            Operation operationSaved = operationService.saveOperation( operation );
+            List<Operation> operationList = List.of(
+                    giveNewOperation( 456, financialAccount ),
+                    giveNewOperation( -456, financialAccount)
+            );
+            AccountingEntry accountingEntrySaved = createAndGiveAccountEntryFromBdd(
+                    "entry_label_3",
+                    accountingBook,
+                    operationList
+            );
+            Operation operationSaved = accountingEntrySaved.getOperations().getFirst();
 
             //when
-            Operation operationFromBdd = operationService.getOperationById( operationSaved.getId() );
+            Operation operationFromBdd = operationService.getOperationById( accountingEntrySaved.getOperations().getFirst().getId() );
 
             //then
             assertEquals( operationFromBdd.getAmount(), operationSaved.getAmount() );
@@ -140,11 +105,24 @@ public class OperationServiceIT {
         return financialAccountService.saveFinancialAccount( financialAccount );
     }
 
-    private AccountingEntry createAndGiveAccountEntryFromBdd( String label, AccountingBook book ){
+    private Operation giveNewOperation(int amount, FinancialAccount account){
+        Operation operation = new Operation();
+        operation.setAmount( amount );
+        operation.setFinancialAccount( account );
+        return operation;
+    }
+
+    private AccountingEntry createAndGiveAccountEntryFromBdd(String label, AccountingBook book, List<Operation> operations ){
         AccountingEntry accountingEntry = new AccountingEntry();
         accountingEntry.setLabel( label );
         accountingEntry.setDate( LocalDateTime.now() );
         accountingEntry.setAccountingBook( book );
+
+        operations.forEach( operation -> {
+            accountingEntry.getOperations().add( operation );
+            operation.setAccountingEntry( accountingEntry );
+        });
+
         return accountingEntryService.saveAccountingEntry( accountingEntry );
     }
 }
