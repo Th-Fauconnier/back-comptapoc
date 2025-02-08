@@ -3,6 +3,8 @@ package com.fath.comptapoc.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fath.comptapoc.model.dtos.AccountingBookDto;
 import com.fath.comptapoc.model.dtos.AccountingEntryDto;
+import com.fath.comptapoc.model.dtos.FinancialAccountDto;
+import com.fath.comptapoc.model.dtos.OperationDto;
 import com.jayway.jsonpath.JsonPath;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.MethodOrderer;
@@ -16,10 +18,10 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.ResultActions;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Set;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -36,6 +38,8 @@ public class AccountingEntryControllerIT {
     @Autowired
     private MockMvc mockMvc;
 
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+
     @Test
     @Order(1)
     public void whenCreateAccountingEntryHaventAccountingBook_thenBadRequest() throws Exception {
@@ -46,7 +50,7 @@ public class AccountingEntryControllerIT {
         accountingEntry.setDate( LocalDateTime.now() );
 
         //when //then
-        ResultActions resultActions = mockMvc.perform(post("/accountingEntry/create")
+        mockMvc.perform(post("/accountingEntry/create")
                 .content( new ObjectMapper().writeValueAsString( accountingEntry ) )
                 .contentType( MediaType.APPLICATION_JSON )
                 .accept( MediaType.APPLICATION_JSON )
@@ -94,28 +98,12 @@ public class AccountingEntryControllerIT {
     @Test
     @Order(1)
     public void whenCreateAccountingEntry_thenIsCreated() throws Exception {
-        //give
-        AccountingBookDto accountingBookDto = createAndGiveAnAccountingBookDto( "test_book_name_1");
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-        LocalDateTime date = LocalDateTime.now();
-
-        AccountingEntryDto accountingEntryDto = new AccountingEntryDto();
-        accountingEntryDto.setDate( date );
-        accountingEntryDto.setLabel( "Test_label_1" );
-        accountingEntryDto.setAccountingBook( accountingBookDto );
-
-        //when //then
-        mockMvc.perform( post("/accountingEntry/create")
-                .content( new ObjectMapper().writeValueAsString( accountingEntryDto ) )
-                .contentType( MediaType.APPLICATION_JSON )
-                .accept( MediaType.APPLICATION_JSON )
-        )
-                .andExpect( status().isCreated() )
-                .andExpect( jsonPath("$.id" ).exists() )
-                .andExpect( jsonPath( "$.label" ).value( accountingEntryDto.getLabel() ) )
-                .andExpect( jsonPath( "$.date" ).value( date.format( formatter ) ))
-                .andExpect( jsonPath("$.accountingBook.name" ).value( accountingEntryDto.getAccountingBook().getName() ));
+        //give//when//then
+        createAccountingEntryAndGiveHisId(
+                "test_label_1",
+                "test_book_name_1",
+                createAndGiveAFinancialAccountDto( "account_name_1", 555)
+        );
     }
 
     @Test
@@ -124,16 +112,29 @@ public class AccountingEntryControllerIT {
     public void whenGetAccountingEntryById_thenIsFounded() throws Exception {
 
         //give
-        String label = "test_label_1";
-        String bookName = "test_book_name_2";
-        Integer id = createAccountingEntryAndGiveHisId( label, bookName );
+        AccountingEntryDto accountingEntryDto = createAccountingEntryAndGiveHisId(
+                "test_label_2",
+                "test_book_name_2",
+                createAndGiveAFinancialAccountDto( "account_name_2", 555)
+        );
+
+        MvcResult result = mockMvc.perform( post("/accountingEntry/create")
+                .content( new ObjectMapper().writeValueAsString( accountingEntryDto ) )
+                .contentType( MediaType.APPLICATION_JSON )
+                .accept( MediaType.APPLICATION_JSON )
+        )
+                .andExpect( status().isCreated() )
+                .andReturn();
+
+        String response = result.getResponse().getContentAsString();
+        Integer id = JsonPath.parse( response ).read("$.id");
 
         //when //then
         mockMvc.perform( get("/accountingEntry/" + id ) )
                 .andExpect( status().isFound() )
                 .andExpect( jsonPath( "$.id").value( id ) )
-                .andExpect( jsonPath("$.label").value( label ) )
-                .andExpect( jsonPath( "$.accountingBook.name").value( bookName ) );
+                .andExpect( jsonPath("$.label").value( accountingEntryDto.getLabel() ) )
+                .andExpect( jsonPath( "$.accountingBook.name").value( accountingEntryDto.getAccountingBook().getName() ) );
 
     }
 
@@ -142,30 +143,49 @@ public class AccountingEntryControllerIT {
     @Transactional
     public void whenDeleteAccountingEntryById_thenIsDeleted() throws Exception {
         //give
-        Integer id = createAccountingEntryAndGiveHisId( "test_label_2", "test_book_name_3");
+        AccountingEntryDto accountingEntryDto = createAccountingEntryAndGiveHisId(
+                "test_label_5",
+                "test_book_name_5",
+                createAndGiveAFinancialAccountDto( "account_name_5", 555)
+        );
 
         //when //then
-        mockMvc.perform( delete("/accountingEntry/" + id ) )
+        mockMvc.perform( delete("/accountingEntry/" + accountingEntryDto.getId() ) )
                 .andExpect( status().isOk() );
         //then
-        mockMvc.perform( get("/accountingEntry/" + id) )
+        mockMvc.perform( get("/accountingEntry/" + accountingEntryDto.getId() ) )
                 .andExpect( status().isNotFound() );
     }
 
-    private Integer createAccountingEntryAndGiveHisId( String label, String bookName) throws Exception {
+    private AccountingEntryDto createAccountingEntryAndGiveHisId( String label, String bookName, FinancialAccountDto financialAccountDto) throws Exception {
         AccountingBookDto accountingBookDto = createAndGiveAnAccountingBookDto( bookName );
         AccountingEntryDto accountingEntryDto = giveAnAccountingEntryDto(
                 label,
                 LocalDateTime.now(),
                 accountingBookDto
         );
+        addOperationDtoIntoEntry( 450, financialAccountDto, accountingEntryDto );
+        addOperationDtoIntoEntry( -450, financialAccountDto, accountingEntryDto );
+
         MvcResult result = mockMvc.perform( post("/accountingEntry/create" )
                 .content( new ObjectMapper().writeValueAsString( accountingEntryDto ) )
                 .contentType( MediaType.APPLICATION_JSON )
                 .accept( MediaType.APPLICATION_JSON )
-        ).andReturn();
+        )
+            .andExpect( status().isCreated() )
+            .andExpect( jsonPath("$.id" ).exists() )
+            .andExpect( jsonPath( "$.label" ).value( accountingEntryDto.getLabel() ) )
+            .andExpect( jsonPath( "$.date" ).value( accountingEntryDto.getDate().format( formatter ) ))
+            .andExpect( jsonPath("$.accountingBook.name" ).value( accountingEntryDto.getAccountingBook().getName() ) )
+            .andExpect( jsonPath( "$.operations").isNotEmpty() )
+            .andReturn();
 
-        return JsonPath.read( result.getResponse().getContentAsString(), "$.id");
+        String response = result.getResponse().getContentAsString();
+        Integer id = JsonPath.parse( response ).read("$.id");
+
+        accountingEntryDto.setId( id.longValue() );
+
+        return accountingEntryDto;
     }
 
     private AccountingEntryDto giveAnAccountingEntryDto( String label, LocalDateTime localDateTime, AccountingBookDto accountingBookDto ){
@@ -187,7 +207,6 @@ public class AccountingEntryControllerIT {
 
         AccountingBookDto accountingBookDto = giveAnAccountingBookDto( bookName );
 
-        //extraire id
         MvcResult mvcResult = mockMvc.perform( post("/accountBook/create")
                         .content( new ObjectMapper().writeValueAsString( accountingBookDto) )
                         .contentType( MediaType.APPLICATION_JSON )
@@ -198,9 +217,37 @@ public class AccountingEntryControllerIT {
                 .andReturn();
 
         String response = mvcResult.getResponse().getContentAsString();
-        Integer id = JsonPath.parse(response).read("$.id");
+        Integer id = JsonPath.parse( response ).read("$.id");
 
         accountingBookDto.setId( id.longValue() );
         return accountingBookDto;
+    }
+
+    private FinancialAccountDto createAndGiveAFinancialAccountDto(String accountName, int code) throws Exception {
+        FinancialAccountDto financialAccountDto = new FinancialAccountDto();
+        financialAccountDto.setName( accountName );
+        financialAccountDto.setCode( code );
+
+        MvcResult mvcResult = mockMvc.perform( post("/financialAccount/create")
+                .content( new ObjectMapper().writeValueAsString( financialAccountDto ) )
+                .contentType( MediaType.APPLICATION_JSON )
+                .accept( MediaType.APPLICATION_JSON )
+        )
+                .andExpect( status().isCreated() )
+                .andExpect( jsonPath( "$.id").exists() )
+                .andReturn();
+
+        String response = mvcResult.getResponse().getContentAsString();
+        Integer id = JsonPath.parse( response ).read("$.id");
+
+        financialAccountDto.setId( id.longValue() );
+        return financialAccountDto;
+    }
+
+    private void addOperationDtoIntoEntry( int amount, FinancialAccountDto financialAccountDto, AccountingEntryDto accountingEntryDto ){
+        OperationDto operationDto = new OperationDto();
+        operationDto.setAmount( amount );
+        operationDto.setFinancialAccount( financialAccountDto );
+        accountingEntryDto.getOperations().add( operationDto );
     }
 }
