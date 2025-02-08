@@ -3,7 +3,6 @@ package com.fath.comptapoc.controller;
 import com.fath.comptapoc.model.dtos.OperationDto;
 import com.fath.comptapoc.model.entities.Operation;
 import com.fath.comptapoc.services.impl.OperationServiceImpl;
-import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,15 +19,6 @@ public class OperationController {
     private final ModelMapper modelMapper;
 
     public OperationController() { this.modelMapper = new ModelMapper(); }
-
-    @PostMapping("/create")
-    public ResponseEntity<?> createOperation(@Valid @RequestBody OperationDto operationDto ){
-        Operation operation = operationService.saveOperation( convertToEntity( operationDto ) );
-        return new ResponseEntity<>(
-                convertToDto( operation ),
-                HttpStatus.CREATED
-        );
-    }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getOperationById(@PathVariable Long id) throws ClassNotFoundException {
