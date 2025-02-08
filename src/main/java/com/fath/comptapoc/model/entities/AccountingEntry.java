@@ -41,7 +41,7 @@ public class AccountingEntry {
     private AccountingBook accountingBook;
 
     @NotNull(message = "Operation list is mandatory")
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "accountingEntry")
+    @OneToMany(mappedBy = "accountingEntry", cascade = CascadeType.PERSIST )
     @Size(min=2, message = "Operation list must have two or more operation" )
     @EntryBalance
     private List<@Valid Operation> operations = new ArrayList<>();
