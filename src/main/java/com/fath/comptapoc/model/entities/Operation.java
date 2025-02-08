@@ -21,8 +21,7 @@ public class Operation {
     @JoinColumn(name = "accountId")
     private FinancialAccount financialAccount;
 
-    @NotNull( message = "AccountingEntry is mandatory")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="entryId")
     private AccountingEntry accountingEntry;
 }
