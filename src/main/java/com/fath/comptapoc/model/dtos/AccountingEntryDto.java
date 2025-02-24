@@ -13,6 +13,7 @@ import lombok.EqualsAndHashCode;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
 
 @Data
@@ -36,5 +37,6 @@ public class AccountingEntryDto {
     @JsonIgnoreProperties("accountingEntries")
     private AccountingBookDto accountingBook;
 
-    private Set<OperationDto> operations;
+    @JsonIgnoreProperties("accountingEntry")
+    private Set<OperationDto> operations = new HashSet<>();
 }

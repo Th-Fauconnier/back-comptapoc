@@ -25,19 +25,9 @@ public class AccountingBookServiceIT {
     @Autowired
     private AccountingBookServiceImpl accountingService;
 
-    @Value("${example.firstProperty}") private String firstProperty;
-    @Value("${example.secondProperty}") private String secondProperty;
-
     @Test
     public void whenTestContextLoads_thenServiceTestISNotNull() {
-        assertThat(accountingService).isNotNull();
-    }
-
-    @Test
-    public void shouldProfiledProperty_overridePropertyValues() {
-
-        assertEquals("profile", firstProperty);
-        assertEquals("defaultSecond", secondProperty);
+        assertThat( accountingService ).isNotNull();
     }
 
     @Test
@@ -79,13 +69,31 @@ public class AccountingBookServiceIT {
     @Test
     public void getAccountingBookById_whenFound(){
         try{
+            String bookName =  "testName_02";
             AccountingBook accountingBook = new AccountingBook();
-            accountingBook.setName( "testName_02" );
+            accountingBook.setName( bookName );
             AccountingBook accountingBookSaved = accountingService.saveAccountingBook( accountingBook );
 
            AccountingBook accountingBookFromDB = accountingService.getAccountingBookById( accountingBookSaved.getId() );
-           assertEquals( accountingBookFromDB.getName(), "testName_02"  );
+           assertEquals( accountingBookFromDB.getName(), bookName  );
            assertEquals( accountingBookFromDB.getId(), accountingBook.getId() );
+
+        } catch(Exception e ){
+            fail( e.getMessage() );
+        }
+    }
+
+    @Test
+    public void getAccountingBookByName_whenFound(){
+        try{
+            String bookName =  "testName_03";
+            AccountingBook accountingBook = new AccountingBook();
+            accountingBook.setName( bookName );
+            AccountingBook accountingBookSaved = accountingService.saveAccountingBook( accountingBook );
+
+            AccountingBook accountingBookFromDB = accountingService.getAccountingBookByName( accountingBookSaved.getName() );
+            assertEquals( accountingBookFromDB.getName(), bookName  );
+            assertEquals( accountingBookFromDB.getId(), accountingBook.getId() );
 
         } catch(Exception e ){
             fail( e.getMessage() );
@@ -96,8 +104,9 @@ public class AccountingBookServiceIT {
     public void putAccountingBook_whenIsSuccess(){
         try{
             //give
+            String bookName =  "testName_04";
             AccountingBook accountingBook = new AccountingBook();
-            accountingBook.setName( "testName_03" );
+            accountingBook.setName( bookName );
             AccountingBook accountingBookSaved = accountingService.saveAccountingBook( accountingBook );
 
             accountingBookSaved.setName( "modifiedName_01" );
@@ -107,33 +116,6 @@ public class AccountingBookServiceIT {
             assertEquals( accountingBookModified.getId(), accountingBookSaved.getId() );
 
         } catch( Exception e ){
-            fail( e.getMessage() );
-        }
-    }
-
-    @Test
-    public void getAllAccountingBooks(){
-        try{
-
-            Set<AccountingBook> accountingBooks = new HashSet<>();
-            AccountingBook ac1 = new AccountingBook();
-            ac1.setName("test_03");
-            AccountingBook ac2 = new AccountingBook();
-            ac2.setName("test_04");
-            AccountingBook ac3 = new AccountingBook();
-            ac3.setName("test_05");
-            accountingBooks.add( ac1);
-            accountingBooks.add( ac2);
-            accountingBooks.add( ac3);
-
-            accountingBooks.forEach( ac -> accountingService.saveAccountingBook( ac ));
-
-            List<AccountingBook> accountingBooksFromBdd = accountingService.getAllAccountingBooks();
-
-            assertEquals( accountingBooksFromBdd.size(), 3);
-            assertTrue( accountingBooksFromBdd.containsAll( accountingBooks ) ) ;
-
-        } catch(Exception e ){
             fail( e.getMessage() );
         }
     }
@@ -152,6 +134,36 @@ public class AccountingBookServiceIT {
                     () -> accountingService.getAccountingBookById( accountingBookSaved.getId() ),
                     "Expected notFoundException to throw, but it didn't"
             );
+
+        } catch(Exception e ){
+            fail( e.getMessage() );
+        }
+    }
+
+    @Test
+    public void getAllAccountingBooks(){
+        try{
+
+            List<AccountingBook> accountingBooksFromBdd = accountingService.getAllAccountingBooks();
+            accountingBooksFromBdd.forEach( b -> accountingService.deleteAccountingBook( b.getId() ) );
+
+            Set<AccountingBook> accountingBooks = new HashSet<>();
+            AccountingBook ac1 = new AccountingBook();
+            ac1.setName("test_03");
+            AccountingBook ac2 = new AccountingBook();
+            ac2.setName("test_04");
+            AccountingBook ac3 = new AccountingBook();
+            ac3.setName("test_05");
+            accountingBooks.add( ac1 );
+            accountingBooks.add( ac2 );
+            accountingBooks.add( ac3 );
+
+            accountingBooks.forEach( ac -> accountingService.saveAccountingBook( ac ));
+
+            accountingBooksFromBdd = accountingService.getAllAccountingBooks();
+
+            assertEquals( accountingBooksFromBdd.size(), 3);
+            assertTrue( accountingBooksFromBdd.containsAll( accountingBooks ) ) ;
 
         } catch(Exception e ){
             fail( e.getMessage() );

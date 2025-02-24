@@ -22,12 +22,7 @@ public class AccountingBookServiceImpl implements IAccountingBookService {
     @Autowired
     private AccountingBookRepository accountingBookRepository;
 
-    /**
-     * Retrieve an accountingBook by his id in the database
-     * @param id as Long
-     * @return if it's existing in database, the accountingBook linked by the id
-     * @throws ClassNotFoundException if none is found with given id
-     */
+    @Override
     public AccountingBook getAccountingBookById(final Long id) throws ClassNotFoundException {
         Optional< AccountingBook > optionalAccountingBook = accountingBookRepository.findById( id );
         if( optionalAccountingBook.isEmpty() ) {
@@ -37,30 +32,36 @@ public class AccountingBookServiceImpl implements IAccountingBookService {
         }
     }
 
-    /**
-     * Retrieve all accountingBook in the database
-     * @return Set of accountingBooks found
-     */
+    @Override
+    public AccountingBook getAccountingBookByName( String name ) throws ClassNotFoundException {
+        Optional< AccountingBook > optionalAccountingBook = accountingBookRepository.findByName( name );
+        if( optionalAccountingBook.isEmpty() ) {
+            throw new ClassNotFoundException( "AccountingBook not found" );
+        }else {
+            return optionalAccountingBook.get();
+        }
+    }
+
+    @Override
     public List<AccountingBook> getAllAccountingBooks(){
         return accountingBookRepository.findAll();
     }
 
-    /**
-     * Remove in database the accountingBook linked by id parameter, all children will be deleted by cascade
-     * @param id as Long
-     */
+    @Override
     public void deleteAccountingBook( final Long id) {
         accountingBookRepository.deleteById( id );
     }
 
+    @Override
     @Transactional
     public AccountingBook saveAccountingBook( AccountingBook accountingBook ) throws ConstraintViolationException {
-        accountingBook.setAccountingEntries( new ArrayList<>());
+        accountingBook.setAccountingEntries( new ArrayList<>() );
         isAccountingBookValid( accountingBook );
 
         return accountingBookRepository.save( accountingBook  );
     }
 
+    @Override
     public AccountingBook putAccountingBook( AccountingBook accountingBook ){
         isAccountingBookValid( accountingBook );
         return accountingBookRepository.save( accountingBook );
@@ -80,10 +81,10 @@ public class AccountingBookServiceImpl implements IAccountingBookService {
         AtomicBoolean isNotValid = new AtomicBoolean(false);
         StringBuilder sb = new StringBuilder();
 
-        Set<ConstraintViolation<AccountingBook>> violations = validator.validate( accountingBook );
+        Set< ConstraintViolation< AccountingBook > > violations = validator.validate( accountingBook );
         if (!violations.isEmpty()) {
             isNotValid.set(true);
-            for (ConstraintViolation<AccountingBook> constraintViolation : violations) {
+            for ( ConstraintViolation< AccountingBook > constraintViolation : violations ) {
                 sb.append( constraintViolation.getMessage() );
             }
         }

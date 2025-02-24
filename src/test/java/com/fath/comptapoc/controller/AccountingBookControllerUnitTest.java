@@ -131,7 +131,8 @@ public class AccountingBookControllerUnitTest {
     public void putAccountingBook_whenIsOk(){
         try{
             AccountingBook accountingBookFromBdd = mock( AccountingBook.class );
-            when( accountingBookFromBdd.getId() ).thenReturn( 44L );
+            AccountingBook modifiedAccountingBookFrommBdd = mock( AccountingBook.class );
+            when( modifiedAccountingBookFrommBdd.getName() ).thenReturn( "new_book_name" );
 
             PutAccountingBookDto putAccountingBookDto = mock( PutAccountingBookDto.class );
             when( putAccountingBookDto.getName() ).thenReturn( "book_name" );
@@ -140,7 +141,9 @@ public class AccountingBookControllerUnitTest {
             when( accountingBookService.getAccountingBookById( anyLong() ) )
                     .thenReturn( accountingBookFromBdd );
             when( accountingBookService.saveAccountingBook( any( AccountingBook.class ) ) )
-                    .thenReturn( accountingBook );
+                    .thenReturn( accountingBookFromBdd );
+            when( accountingBookService.putAccountingBook( any( AccountingBook.class ) ) )
+                    .thenReturn( modifiedAccountingBookFrommBdd );
 
 
             mockMvc.perform( put("/accountBook/update" )
@@ -148,7 +151,8 @@ public class AccountingBookControllerUnitTest {
                     .contentType( MediaType.APPLICATION_JSON )
                     .accept( MediaType.APPLICATION_JSON )
             )
-                    .andExpect( status().isOk() );
+                    .andExpect( status().isOk() )
+                    .andExpect( jsonPath("$.name").value( "new_book_name") );
 
         } catch ( Exception e ){
             fail( e.getMessage() );

@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -40,14 +41,63 @@ public class AccountingEntryValidatorITest {
             accountingEntry.setDate( LocalDateTime.now() );
             accountingEntry.setAccountingBook( accountingBook );
 
+            FinancialAccount financialAccount = new FinancialAccount();
+            financialAccount.setCode( 444 );
+            financialAccount.setName( "account_name" );
+
+            Operation operation1 = new Operation();
+            operation1.setFinancialAccount( financialAccount );
+            operation1.setAmount( 450 );
+            operation1.setAccountingEntry( accountingEntry );
+
+            Operation operation2 = new Operation();
+            operation2.setFinancialAccount( financialAccount );
+            operation2.setAmount( -450 );
+            operation2.setAccountingEntry( accountingEntry );
+
+            accountingEntry.getOperations().add( operation1 );
+            accountingEntry.getOperations().add( operation2 );
+
             violations = validator.validate( accountingEntry );
 
             assertTrue( violations.isEmpty() );
-           /* if( violations.isEmpty() ) {
-                assertThat( accountingEntry.getLabel() ).isEqualTo( "testLabel" );
+        } catch (Exception e ){
+            fail( e.getMessage() );
+        }
+    }
+
+    @Test
+    public void accountingEntryValidator_whenBalanceIsNotValid(){
+        try{
+            AccountingEntry accountingEntry = new AccountingEntry();
+            accountingEntry.setLabel( "testLabel" );
+            accountingEntry.setDate( LocalDateTime.now() );
+            accountingEntry.setAccountingBook( accountingBook );
+
+            FinancialAccount financialAccount = new FinancialAccount();
+            financialAccount.setCode( 444 );
+            financialAccount.setName( "account_name" );
+
+            Operation operation1 = new Operation();
+            operation1.setFinancialAccount( financialAccount );
+            operation1.setAmount( 451 );
+            operation1.setAccountingEntry( accountingEntry );
+
+            Operation operation2 = new Operation();
+            operation2.setFinancialAccount( financialAccount );
+            operation2.setAmount( -450 );
+            operation2.setAccountingEntry( accountingEntry );
+
+            accountingEntry.getOperations().add( operation1 );
+            accountingEntry.getOperations().add( operation2 );
+
+            violations = validator.validate( accountingEntry );
+
+            if( violations.size() == 1 ){
+                violations.forEach( c -> assertThat( c.getMessage() ).isEqualTo( "The balance of entry's operations isn't null" ) );
             } else {
-                fail( "unexpected constraintViolationException has been throwed" );
-            }*/
+                fail( "ConstraintVilationException expected not throwing" );
+            }
         } catch (Exception e ){
             fail( e.getMessage() );
         }
@@ -59,6 +109,24 @@ public class AccountingEntryValidatorITest {
             AccountingEntry accountingEntry = new AccountingEntry();
             accountingEntry.setDate( LocalDateTime.now() );
             accountingEntry.setAccountingBook( accountingBook );
+
+            FinancialAccount financialAccount = new FinancialAccount();
+            financialAccount.setCode( 444 );
+            financialAccount.setName( "account_name" );
+
+            Operation operation1 = new Operation();
+            operation1.setFinancialAccount( financialAccount );
+            operation1.setAmount( 450 );
+            operation1.setAccountingEntry( accountingEntry );
+
+            Operation operation2 = new Operation();
+            operation2.setFinancialAccount( financialAccount );
+            operation2.setAmount( -450 );
+            operation2.setAccountingEntry( accountingEntry );
+
+            accountingEntry.getOperations().add( operation1 );
+            accountingEntry.getOperations().add( operation2 );
+
             violations = validator.validate( accountingEntry );
 
             if( violations.size() == 1 ){
@@ -77,6 +145,23 @@ public class AccountingEntryValidatorITest {
             AccountingEntry accountingEntry = new AccountingEntry();
             accountingEntry.setLabel( "testLabel" );
             accountingEntry.setAccountingBook( accountingBook );
+
+            FinancialAccount financialAccount = new FinancialAccount();
+            financialAccount.setCode( 444 );
+            financialAccount.setName( "account_name" );
+
+            Operation operation1 = new Operation();
+            operation1.setFinancialAccount( financialAccount );
+            operation1.setAmount( 450 );
+            operation1.setAccountingEntry( accountingEntry );
+
+            Operation operation2 = new Operation();
+            operation2.setFinancialAccount( financialAccount );
+            operation2.setAmount( -450 );
+            operation2.setAccountingEntry( accountingEntry );
+
+            accountingEntry.getOperations().add( operation1 );
+            accountingEntry.getOperations().add( operation2 );
             violations = validator.validate( accountingEntry );
 
             if( violations.size() == 1 ){
@@ -94,10 +179,58 @@ public class AccountingEntryValidatorITest {
         AccountingEntry accountingEntry = new AccountingEntry();
         accountingEntry.setLabel( "testLabel" );
         accountingEntry.setDate( LocalDateTime.now() );
+
+        FinancialAccount financialAccount = new FinancialAccount();
+        financialAccount.setCode( 444 );
+        financialAccount.setName( "account_name" );
+
+        Operation operation1 = new Operation();
+        operation1.setFinancialAccount( financialAccount );
+        operation1.setAmount( 450 );
+        operation1.setAccountingEntry( accountingEntry );
+
+        Operation operation2 = new Operation();
+        operation2.setFinancialAccount( financialAccount );
+        operation2.setAmount( -450 );
+        operation2.setAccountingEntry( accountingEntry );
+
+        accountingEntry.getOperations().add( operation1 );
+        accountingEntry.getOperations().add( operation2 );
+
         violations = validator.validate( accountingEntry );
 
         if( violations.size() == 1 ){
             violations.forEach( c -> assertThat( c.getMessage() ).isEqualTo( "AccountingBook is mandatory" ) );
+        } else {
+            fail( "ConstraintVilationException expected not throwing" );
+        }
+    }
+
+    @Test
+    public void whenValidationEntry_whenEntryHaventOperations(){
+      AccountingEntry accountingEntry = new AccountingEntry();
+      accountingEntry.setLabel( "entry_label");
+      accountingEntry.setDate( LocalDateTime.now() );
+      accountingEntry.setAccountingBook( accountingBook );
+
+        violations = validator.validate( accountingEntry );
+
+        violations.forEach( v -> {
+            System.out.println( v.getMessage() );
+        });
+
+        if( violations.size() == 1 ){
+            violations.forEach( c -> assertThat( c.getMessage() ).isEqualTo( "Operation list must have two or more operation" ) );
+        } else {
+            fail( "ConstraintVilationException expected not throwing" );
+        }
+
+      accountingEntry.setOperations( new ArrayList<>() );
+
+      violations = validator.validate( accountingEntry );
+
+        if( violations.size() == 1 ){
+            violations.forEach( c -> assertThat( c.getMessage() ).isEqualTo( "Operation list must have two or more operation" ) );
         } else {
             fail( "ConstraintVilationException expected not throwing" );
         }

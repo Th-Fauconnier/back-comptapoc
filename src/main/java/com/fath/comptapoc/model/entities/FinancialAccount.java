@@ -1,10 +1,11 @@
 package com.fath.comptapoc.model.entities;
 
-import jakarta.annotation.Nonnull;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.util.Set;
@@ -17,10 +18,10 @@ public class FinancialAccount {
     @GeneratedValue
     private Long id;
 
-    @Nonnull
+    @NotBlank(message = "Name is mandatory")
     private String name;
 
-    @Nonnull
+    @NotNull(message = "Code is mandatory")
     private int code;
 
     @OneToMany(mappedBy = "financialAccount")

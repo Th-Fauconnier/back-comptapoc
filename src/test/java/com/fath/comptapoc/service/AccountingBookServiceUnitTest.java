@@ -19,6 +19,7 @@ import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -63,6 +64,23 @@ public class AccountingBookServiceUnitTest {
         try {
             accountingBookService.getAccountingBookById( anyLong() );
             assertThat( accountingBook.getId() ).isEqualTo( 21L );
+
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    void getAccountingBookByName_whenFoundIt() {
+        //when
+        when( accountingBook.getName() )
+                .thenReturn( "name_one" );
+        when( accountingBookRepository.findByName( anyString() ) )
+                .thenReturn(Optional.of( accountingBook ) );
+        //then
+        try {
+            accountingBookService.getAccountingBookByName( anyString() );
+            assertThat( accountingBook.getName() ).isEqualTo( "name_one" );
 
         } catch (Exception e) {
             fail(e.getMessage());
@@ -145,7 +163,7 @@ public class AccountingBookServiceUnitTest {
         } catch ( Exception e )
         {
             System.out.println( e.getMessage() );
-            fail( "Unespected error");
+            fail( "Unexpected error");
         }
     }
 
