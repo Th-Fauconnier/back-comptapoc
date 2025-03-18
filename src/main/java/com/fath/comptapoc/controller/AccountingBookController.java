@@ -32,7 +32,7 @@ public class AccountingBookController {
         AccountingBook accountingBook = accountingBookService.getAccountingBookById( id );
         return new ResponseEntity<>(
                 convertToDto( accountingBook ),
-                HttpStatus.FOUND
+                HttpStatus.OK
         );
     }
 

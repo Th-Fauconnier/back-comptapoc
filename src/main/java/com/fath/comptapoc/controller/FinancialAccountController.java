@@ -40,7 +40,7 @@ public class FinancialAccountController {
         FinancialAccount financialAccount = financialAccountService.getFinancialAccountById( id );
         return new ResponseEntity<>(
                 convertToDto( financialAccount ),
-                HttpStatus.FOUND
+                HttpStatus.OK
         );
     }
 
