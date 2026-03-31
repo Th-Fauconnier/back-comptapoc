@@ -36,7 +36,7 @@ public class AccountingEntryController {
             AccountingEntry accountingEntry = accountingEntryService.getAccountingEntryById( id );
             return new ResponseEntity<>(
                     convertToDto( accountingEntry ),
-                    HttpStatus.FOUND
+                    HttpStatus.OK
             );
     }
 

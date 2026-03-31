@@ -60,7 +60,7 @@ public class AccountingEntryControllerUnitTest {
     }
 
     @Test
-    public void getAccountingEntryByID_thenIsFound() {
+    public void getAccountingEntryByID_thenIsOk() {
         try{
             //give
             AccountingEntry accountingEntry = giveAccountingEntryMock(
@@ -73,7 +73,7 @@ public class AccountingEntryControllerUnitTest {
 
             //when //then
             mockMvc.perform( get("/accountingEntry/14" ) )
-                    .andExpect( status().isFound() );
+                    .andExpect( status().isOk() );
 
         } catch(Exception e){
             fail(e.getMessage() );

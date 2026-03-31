@@ -55,14 +55,16 @@ public class AccountingBookControllerUnitTest {
     }
 
     @Test
-    public void getAccountingBookById_whenIsFound() throws  Exception {
+    public void getAccountingBookById_whenIsOK() throws  Exception {
+
         //when
         when( accountingBookService.getAccountingBookById( anyLong() ) )
                 .thenReturn( accountingBook );
 
         //then
-        mockMvc.perform( get( "/accountBook/14") )
-                .andExpect( status().isFound() );
+        mockMvc.perform( get( "/accountBook/14")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect( status().isOk() );
     }
 
     @Test

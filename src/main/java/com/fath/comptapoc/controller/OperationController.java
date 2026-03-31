@@ -25,7 +25,7 @@ public class OperationController {
         Operation operation = operationService.getOperationById( id );
         return new ResponseEntity<>(
                 convertToDto( operation ),
-                HttpStatus.FOUND
+                HttpStatus.OK
         );
     }
 

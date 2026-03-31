@@ -92,7 +92,7 @@ public class FinancialAccountControllerUnitTest {
     }
 
     @Test
-    public void getFinancialAccountById_IsFound(){
+    public void getFinancialAccountById_IsOK(){
         try{
             //given
             FinancialAccount financialAccount = mock( FinancialAccount.class );
@@ -102,7 +102,7 @@ public class FinancialAccountControllerUnitTest {
 
             //then
             mockMvc.perform( get("/financialAccount/5465") )
-                    .andExpect( status().isFound() );
+                    .andExpect( status().isOk() );
 
         } catch( Exception e ){
             fail( e.getMessage() );

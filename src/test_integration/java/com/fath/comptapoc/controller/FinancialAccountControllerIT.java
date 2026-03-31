@@ -1,9 +1,7 @@
 package com.fath.comptapoc.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fath.comptapoc.model.dtos.FinancialAccountDto;
-import com.fath.comptapoc.model.entities.FinancialAccount;
 import com.jayway.jsonpath.JsonPath;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,14 +62,14 @@ public class FinancialAccountControllerIT {
     }
 
     @Test
-    public void whenGetFinancialAccount_thenIsFound(){
+    public void whenGetFinancialAccount_thenIsOk(){
         try{
             //given
             int accountId = createFinancialAccountAndGiveHisId( "account_name_2", 667 );
 
             //when //then
             mockMvc.perform( get("/financialAccount/" + accountId ) )
-                    .andExpect( status().isFound() );
+                    .andExpect( status().isOk() );
 
         } catch( Exception e ){
             fail( e.getMessage() );

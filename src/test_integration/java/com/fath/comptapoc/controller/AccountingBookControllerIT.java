@@ -74,13 +74,13 @@ public class AccountingBookControllerIT {
     @Test
     @Order(4)
     @Transactional
-    public void whenGetAccountingBookById_thenIsFound() throws Exception {
+    public void whenGetAccountingBookById_thenIsOk() throws Exception {
         //give
         Integer id = createAccountingBookAndGiveHisId( "label_test_1" );
 
         //then //when
         mockMvc.perform( get("/accountBook/" + id ))
-                .andExpect( status().isFound() )
+                .andExpect( status().isOk() )
                 .andExpect( jsonPath("$.id").value( id ))
                 .andExpect( jsonPath( "$.name").value(  "label_test_1"));
     }
@@ -102,6 +102,7 @@ public class AccountingBookControllerIT {
     @Test
     @Order(6)
     public void whenGetAllAccountingBook_thenIsOk(){
+        //todo
         //give
         Set<AccountingBookDto> accountingBookDtos = Set.of(
                 giveAnAccountingBookDto( "book_1"),

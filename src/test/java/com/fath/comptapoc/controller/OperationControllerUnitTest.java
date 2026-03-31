@@ -49,7 +49,7 @@ public class OperationControllerUnitTest {
     }
 
     @Test
-    public void getOperationById_WhenIsFound(){
+    public void getOperationById_WhenIsOk(){
         try{
             //given
             Operation operation = giveOperationMock(
@@ -62,7 +62,7 @@ public class OperationControllerUnitTest {
                     .thenReturn( operation );
             //then
             mockMvc.perform( get("/operation/45") )
-                    .andExpect( status().isFound() );
+                    .andExpect( status().isOk() );
 
         } catch(Exception e){
             fail(e.getMessage() );

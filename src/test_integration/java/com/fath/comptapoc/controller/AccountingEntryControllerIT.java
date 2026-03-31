@@ -109,7 +109,7 @@ public class AccountingEntryControllerIT {
     @Test
     @Order(4)
     @Transactional
-    public void whenGetAccountingEntryById_thenIsFounded() throws Exception {
+    public void whenGetAccountingEntryById_thenIsOk() throws Exception {
 
         //give
         AccountingEntryDto accountingEntryDto = createAccountingEntryAndGiveHisId(
@@ -131,7 +131,7 @@ public class AccountingEntryControllerIT {
 
         //when //then
         mockMvc.perform( get("/accountingEntry/" + id ) )
-                .andExpect( status().isFound() )
+                .andExpect( status().isOk() )
                 .andExpect( jsonPath( "$.id").value( id ) )
                 .andExpect( jsonPath("$.label").value( accountingEntryDto.getLabel() ) )
                 .andExpect( jsonPath( "$.accountingBook.name").value( accountingEntryDto.getAccountingBook().getName() ) );
