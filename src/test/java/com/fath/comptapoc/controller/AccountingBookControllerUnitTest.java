@@ -11,6 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fath.comptapoc.config.security.WebConfigSecurity;
 import com.fath.comptapoc.model.dtos.AccountingBookDto;
 import com.fath.comptapoc.model.dtos.PutAccountingBookDto;
 import com.fath.comptapoc.model.entities.AccountingBook;
@@ -19,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -26,6 +28,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import java.util.List;
 
 @WebMvcTest(AccountingBookController.class )
+@Import(WebConfigSecurity.class)
 public class AccountingBookControllerUnitTest {
 
     @Autowired

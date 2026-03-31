@@ -1,6 +1,6 @@
 package com.fath.comptapoc.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fath.comptapoc.config.security.WebConfigSecurity;
 import com.fath.comptapoc.model.dtos.AccountingEntryDto;
 import com.fath.comptapoc.model.dtos.FinancialAccountDto;
 import com.fath.comptapoc.model.dtos.OperationDto;
@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.junit.jupiter.api.Assertions.fail;
@@ -22,6 +23,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(OperationController.class)
+@Import(WebConfigSecurity.class)
 public class OperationControllerUnitTest {
 
     @Autowired
