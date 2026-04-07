@@ -29,8 +29,13 @@ public class OperationValidatorIT {
         testingOperation = new Operation();
         testingOperation.setFinancialAccount( financialAccount );
 
-        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-        validator = factory.getValidator();
+        try{
+            ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+            validator = factory.getValidator();
+        } catch ( Exception e ){
+            fail( e.getMessage() );
+        }
+
     }
 
     @Test

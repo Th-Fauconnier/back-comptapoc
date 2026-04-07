@@ -29,8 +29,12 @@ public class AccountingEntryValidatorITest {
     public static void setup() {
         accountingBook = new AccountingBook();
         accountingBook.setName( "test_book" );
-        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-        validator = factory.getValidator();
+        try{
+            ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+            validator = factory.getValidator();
+        } catch ( Exception e ){
+            fail( e.getMessage() );
+        }
     }
 
     @Test
