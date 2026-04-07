@@ -47,19 +47,25 @@ public class AccountingEntryValidatorITest {
 
             Operation operation1 = new Operation();
             operation1.setFinancialAccount( financialAccount );
-            operation1.setAmount( 450 );
+            operation1.setAmount( 450.20d );
             operation1.setAccountingEntry( accountingEntry );
 
             Operation operation2 = new Operation();
             operation2.setFinancialAccount( financialAccount );
-            operation2.setAmount( -450 );
+            operation2.setAmount( -450.20d );
             operation2.setAccountingEntry( accountingEntry );
 
             accountingEntry.getOperations().add( operation1 );
             accountingEntry.getOperations().add( operation2 );
 
+            System.out.println( "amount for op1 : " + operation1.getAmount() );
+            System.out.println( "amount for op2 : " + operation2.getAmount() );
+
             violations = validator.validate( accountingEntry );
 
+            if( !violations.isEmpty() ){
+                violations.forEach( violation -> System.out.println( violation.getMessage() ));
+            }
             assertTrue( violations.isEmpty() );
         } catch (Exception e ){
             fail( e.getMessage() );
@@ -80,12 +86,12 @@ public class AccountingEntryValidatorITest {
 
             Operation operation1 = new Operation();
             operation1.setFinancialAccount( financialAccount );
-            operation1.setAmount( 451 );
+            operation1.setAmount( 451d );
             operation1.setAccountingEntry( accountingEntry );
 
             Operation operation2 = new Operation();
             operation2.setFinancialAccount( financialAccount );
-            operation2.setAmount( -450 );
+            operation2.setAmount( -450d );
             operation2.setAccountingEntry( accountingEntry );
 
             accountingEntry.getOperations().add( operation1 );
