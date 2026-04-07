@@ -1,5 +1,6 @@
 package com.fath.comptapoc.model.entities;
 
+import com.fath.comptapoc.config.constraints.OperationAmount;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -7,6 +8,7 @@ import lombok.Data;
 @Entity
 @Table
 @Data
+@OperationAmount
 public class Operation {
 
     @Id
@@ -14,7 +16,7 @@ public class Operation {
     private Long id;
 
     @NotNull(message  = "Amount is mandatory")
-    private int amount;
+    private double amount;
 
     @NotNull( message = "Account is mandatory")
     @ManyToOne
