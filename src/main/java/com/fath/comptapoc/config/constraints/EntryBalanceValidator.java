@@ -4,7 +4,6 @@ import com.fath.comptapoc.model.entities.Operation;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class EntryBalanceValidator implements ConstraintValidator<EntryBalance, List<Operation>> {
 
