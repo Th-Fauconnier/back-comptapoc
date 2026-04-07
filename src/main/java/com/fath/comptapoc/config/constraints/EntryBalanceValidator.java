@@ -10,8 +10,10 @@ public class EntryBalanceValidator implements ConstraintValidator<EntryBalance, 
 
     @Override
     public boolean isValid(List<Operation> value, ConstraintValidatorContext context ){
-        AtomicInteger balance = new AtomicInteger();
-        value.forEach( operation -> balance.addAndGet( operation.getAmount() ) );
-        return balance.intValue() == 0;
+        double balance = 0d;
+        for( Operation operation : value ){
+            balance = balance + operation.getAmount();
+        }
+        return balance == 0;
     }
 }
