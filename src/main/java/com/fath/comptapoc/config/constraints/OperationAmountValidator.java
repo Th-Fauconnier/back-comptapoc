@@ -8,8 +8,8 @@ public class OperationAmountValidator implements ConstraintValidator<OperationAm
 
     /**
      * Check if the decimal part of amount for an Operation haven't more of two digits
-     * @param operation
-     * @param context
+     * @param operation an operation type
+     * @param context ConstraintValidatorContext
      * @return boolean
      */
     @Override
