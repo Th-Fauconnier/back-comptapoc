@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.math.BigDecimal;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -29,8 +30,7 @@ public class OperationValidatorIT {
         testingOperation = new Operation();
         testingOperation.setFinancialAccount( financialAccount );
 
-        try{
-            ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        try(  ValidatorFactory factory = Validation.buildDefaultValidatorFactory() ){
             validator = factory.getValidator();
         } catch ( Exception e ){
             fail( e.getMessage() );
@@ -40,10 +40,9 @@ public class OperationValidatorIT {
 
     @Test
     public void whenOperationAmount_haveBadNumberOfDigits(){
-        testingOperation.setAmount(4.222d);
+        testingOperation.setAmount( BigDecimal.valueOf( 4.222 ) );
 
         violations = validator.validate( testingOperation );
-        System.out.println("violations size : " + violations.size() );
         if( violations.size() == 1 ){
             violations.forEach( c -> assertThat( c.getMessage() ).isEqualTo( "The amount of this operation must have two digits." ) );
         } else {
@@ -54,7 +53,7 @@ public class OperationValidatorIT {
 
     @Test
     public void whenOperationAmount_haveGoodNumberOfDigits(){
-        testingOperation.setAmount(4.20d);
+        testingOperation.setAmount( BigDecimal.valueOf( 4.20d ) );
 
         violations = validator.validate( testingOperation );
 
