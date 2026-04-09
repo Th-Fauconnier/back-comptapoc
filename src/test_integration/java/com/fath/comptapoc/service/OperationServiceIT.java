@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -68,8 +69,8 @@ public class OperationServiceIT {
             AccountingBook accountingBook = createAndGiveBookFromBdd( "book_name_3");
 
             List<Operation> operationList = List.of(
-                    giveNewOperation( 456, financialAccount ),
-                    giveNewOperation( -456, financialAccount)
+                    giveNewOperation( BigDecimal.valueOf( 456 ), financialAccount ),
+                    giveNewOperation( BigDecimal.valueOf( -456 ), financialAccount)
             );
             AccountingEntry accountingEntrySaved = createAndGiveAccountEntryFromBdd(
                     "entry_label_3",
@@ -105,7 +106,7 @@ public class OperationServiceIT {
         return financialAccountService.saveFinancialAccount( financialAccount );
     }
 
-    private Operation giveNewOperation(int amount, FinancialAccount account){
+    private Operation giveNewOperation(BigDecimal amount, FinancialAccount account){
         Operation operation = new Operation();
         operation.setAmount( amount );
         operation.setFinancialAccount( account );
