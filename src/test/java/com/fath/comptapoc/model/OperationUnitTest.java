@@ -26,8 +26,7 @@ public class OperationUnitTest {
 
     @BeforeAll
     public static void setup() {
-        try{
-            ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        try( ValidatorFactory factory = Validation.buildDefaultValidatorFactory() ){
             validator = factory.getValidator();
         } catch( Exception e ){
             fail( e.getMessage() );
