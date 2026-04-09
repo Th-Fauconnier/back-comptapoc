@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Set;
@@ -29,8 +30,7 @@ public class AccountingEntryValidatorITest {
     public static void setup() {
         accountingBook = new AccountingBook();
         accountingBook.setName( "test_book" );
-        try{
-            ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        try( ValidatorFactory factory = Validation.buildDefaultValidatorFactory() ){
             validator = factory.getValidator();
         } catch ( Exception e ){
             fail( e.getMessage() );
@@ -51,19 +51,16 @@ public class AccountingEntryValidatorITest {
 
             Operation operation1 = new Operation();
             operation1.setFinancialAccount( financialAccount );
-            operation1.setAmount( 450.20d );
+            operation1.setAmount( BigDecimal.valueOf( 450.20 ) );
             operation1.setAccountingEntry( accountingEntry );
 
             Operation operation2 = new Operation();
             operation2.setFinancialAccount( financialAccount );
-            operation2.setAmount( -450.20d );
+            operation2.setAmount( BigDecimal.valueOf( -450.20 ) );
             operation2.setAccountingEntry( accountingEntry );
 
             accountingEntry.getOperations().add( operation1 );
             accountingEntry.getOperations().add( operation2 );
-
-            System.out.println( "amount for op1 : " + operation1.getAmount() );
-            System.out.println( "amount for op2 : " + operation2.getAmount() );
 
             violations = validator.validate( accountingEntry );
 
@@ -90,12 +87,12 @@ public class AccountingEntryValidatorITest {
 
             Operation operation1 = new Operation();
             operation1.setFinancialAccount( financialAccount );
-            operation1.setAmount( 451d );
+            operation1.setAmount( BigDecimal.valueOf( 451 ));
             operation1.setAccountingEntry( accountingEntry );
 
             Operation operation2 = new Operation();
             operation2.setFinancialAccount( financialAccount );
-            operation2.setAmount( -450d );
+            operation2.setAmount( BigDecimal.valueOf( -450 ) );
             operation2.setAccountingEntry( accountingEntry );
 
             accountingEntry.getOperations().add( operation1 );
@@ -126,12 +123,12 @@ public class AccountingEntryValidatorITest {
 
             Operation operation1 = new Operation();
             operation1.setFinancialAccount( financialAccount );
-            operation1.setAmount( 450 );
+            operation1.setAmount( BigDecimal.valueOf( 450 ) );
             operation1.setAccountingEntry( accountingEntry );
 
             Operation operation2 = new Operation();
             operation2.setFinancialAccount( financialAccount );
-            operation2.setAmount( -450 );
+            operation2.setAmount( BigDecimal.valueOf( -450 ) );
             operation2.setAccountingEntry( accountingEntry );
 
             accountingEntry.getOperations().add( operation1 );
@@ -162,12 +159,12 @@ public class AccountingEntryValidatorITest {
 
             Operation operation1 = new Operation();
             operation1.setFinancialAccount( financialAccount );
-            operation1.setAmount( 450 );
+            operation1.setAmount( BigDecimal.valueOf( 450 ) );
             operation1.setAccountingEntry( accountingEntry );
 
             Operation operation2 = new Operation();
             operation2.setFinancialAccount( financialAccount );
-            operation2.setAmount( -450 );
+            operation2.setAmount( BigDecimal.valueOf( -450 ) );
             operation2.setAccountingEntry( accountingEntry );
 
             accountingEntry.getOperations().add( operation1 );
@@ -196,12 +193,12 @@ public class AccountingEntryValidatorITest {
 
         Operation operation1 = new Operation();
         operation1.setFinancialAccount( financialAccount );
-        operation1.setAmount( 450 );
+        operation1.setAmount( BigDecimal.valueOf( 450 ) );
         operation1.setAccountingEntry( accountingEntry );
 
         Operation operation2 = new Operation();
         operation2.setFinancialAccount( financialAccount );
-        operation2.setAmount( -450 );
+        operation2.setAmount( BigDecimal.valueOf( -450 ) );
         operation2.setAccountingEntry( accountingEntry );
 
         accountingEntry.getOperations().add( operation1 );
@@ -224,10 +221,6 @@ public class AccountingEntryValidatorITest {
       accountingEntry.setAccountingBook( accountingBook );
 
         violations = validator.validate( accountingEntry );
-
-        violations.forEach( v -> {
-            System.out.println( v.getMessage() );
-        });
 
         if( violations.size() == 1 ){
             violations.forEach( c -> assertThat( c.getMessage() ).isEqualTo( "Operation list must have two or more operation" ) );
