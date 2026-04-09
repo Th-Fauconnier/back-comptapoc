@@ -26,8 +26,13 @@ public class OperationUnitTest {
 
     @BeforeAll
     public static void setup() {
-        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-        validator = factory.getValidator();
+        try{
+            ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+            validator = factory.getValidator();
+        } catch( Exception e ){
+            fail( e.getMessage() );
+        }
+
     }
 
     @Test
@@ -39,7 +44,7 @@ public class OperationUnitTest {
         operation.setFinancialAccount( financialAccountMocked );
 
         violations = validator.validate( operation );
-        if( violations.size() > 0 ){
+        if( !violations.isEmpty() ){
             violations.forEach( violation -> assertThat( violation.getMessage() ).isEqualTo("The amount of this operation must have two digits.") );
         } else fail( "ConstraintVilationException expected not throwing" );
     }
@@ -66,7 +71,7 @@ public class OperationUnitTest {
         //then
         try{
             violations = validator.validate( operation );
-            if( violations.size() > 0 ){
+            if( !violations.isEmpty() ){
                 violations.forEach( violation -> assertThat( violation.getMessage() ).isEqualTo("Account is mandatory") );
             } else fail( "ConstraintVilationException expected not throwing" );
         } catch( Exception e ){
