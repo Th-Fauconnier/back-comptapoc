@@ -7,7 +7,7 @@ import jakarta.validation.ConstraintValidatorContext;
 public class OperationAmountValidator implements ConstraintValidator<OperationAmount, Operation> {
 
     /**
-     * Check is the amount of an Operation haven't more of two digits
+     * Check if the decimal part of amount for an Operation haven't more of two digits
      * @param operation
      * @param context
      * @return boolean
@@ -15,11 +15,18 @@ public class OperationAmountValidator implements ConstraintValidator<OperationAm
     @Override
     public boolean isValid(Operation operation, ConstraintValidatorContext context) {
 
-        double amount = operation.getAmount();
-        System.out.println("amount 1 : " + amount);
-        amount *= 100;
-        System.out.println("amount 2 : " + amount);
-        return amount % 1 == 0;
+        String amount = operation.getAmount().toPlainString();
+
+        // Split into integer and fractional parts
+        String[] parts = amount.split("\\.", 2);
+        // If the partional parts exist, retrieve it, or just get a blank string
+        String fractionalPart = parts.length > 1 ? parts[1] : "";
+
+        // Process fractional part: remove trailing zeros
+        fractionalPart = fractionalPart.replaceAll("0+$", ""); // Remove trailing zeros
+
+        // return if the partional part have 2 digits or less
+        return fractionalPart.length() <= 2;
 
     }
 }
