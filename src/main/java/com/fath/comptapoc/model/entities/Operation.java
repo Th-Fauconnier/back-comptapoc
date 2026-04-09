@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 @Entity
 @Table
 @Data
@@ -16,7 +18,7 @@ public class Operation {
     private Long id;
 
     @NotNull(message  = "Amount is mandatory")
-    private double amount;
+    private BigDecimal amount;
 
     @NotNull( message = "Account is mandatory")
     @ManyToOne
