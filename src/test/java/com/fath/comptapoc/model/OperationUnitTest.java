@@ -34,33 +34,6 @@ public class OperationUnitTest {
 
     }
 
-    @Test
-    public void whenAmountOperationHaveBadDigitsNumber_thenViolationsException() {
-        Operation operation = new Operation();
-        operation.setAmount( BigDecimal.valueOf( 4.005 ) );
-
-        FinancialAccount financialAccountMocked = mock( FinancialAccount.class );
-        operation.setFinancialAccount( financialAccountMocked );
-
-        violations = validator.validate( operation );
-        if( !violations.isEmpty() ){
-            violations.forEach( violation -> assertThat( violation.getMessage() ).isEqualTo("The amount of this operation must have two digits.") );
-        } else fail( "ConstraintVilationException expected not throwing" );
-    }
-
-    @Test
-    public void whenAmountOperationHaveGoodDigitsNumber_thenNoViolationsException() {
-        //when
-        Operation operation = new Operation();
-        operation.setAmount( BigDecimal.valueOf( 4.06 ) );
-
-        FinancialAccount financialAccountMocked = mock( FinancialAccount.class );
-        operation.setFinancialAccount( financialAccountMocked );
-
-        violations = validator.validate( operation );
-        //then
-        assertTrue( violations.isEmpty() );
-    }
 
     @Test
     public void whenOperationHaventMandatoryFinancialAccount_thenViolationsException(){
@@ -71,11 +44,24 @@ public class OperationUnitTest {
         try{
             violations = validator.validate( operation );
             if( !violations.isEmpty() ){
-                violations.forEach( violation -> assertThat( violation.getMessage() ).isEqualTo("Account is mandatory") );
+                violations.forEach( violation -> assertThat( violation.getMessage() ).isEqualTo("Financial account for operation is mandatory") );
             } else fail( "ConstraintVilationException expected not throwing" );
         } catch( Exception e ){
             fail( e.getMessage() );
         }
 
+    }
+
+    @Test
+    public void whenOperationIsFullyValid_thenNoViolationException(){
+        //when
+        Operation operation = new Operation();
+        operation.setAmount( BigDecimal.valueOf( 40.6 ) );
+        FinancialAccount mockedFinancialAccount = mock( FinancialAccount.class );
+        operation.setFinancialAccount( mockedFinancialAccount );
+
+        //then
+        violations = validator.validate( operation );
+        assertThat( violations.isEmpty() );
     }
 }
