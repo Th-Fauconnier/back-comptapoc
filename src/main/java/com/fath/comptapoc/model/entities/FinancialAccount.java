@@ -5,10 +5,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
-import java.util.Set;
+import java.util.List;
 
 @Entity
 @Data
@@ -18,12 +17,11 @@ public class FinancialAccount {
     @GeneratedValue
     private Long id;
 
-    @NotBlank(message = "Name is mandatory")
+    @NotBlank(message = "Name for a financial account is mandatory")
     private String name;
 
-    @NotNull(message = "Code is mandatory")
     private int code;
 
     @OneToMany(mappedBy = "financialAccount")
-    private Set<Operation> operations;
+    private List<Operation> operations;
 }
