@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
@@ -55,8 +56,8 @@ public class AccountingEntryServiceIT {
 
             FinancialAccount account1 = createAndGiveFinancialAccount( 456, "account_1");
             FinancialAccount account2 = createAndGiveFinancialAccount( 556, "account_2");
-            addOperation( 450, account1, accountingEntry );
-            addOperation( -450, account2, accountingEntry );
+            addOperation( BigDecimal.valueOf( 450 ), account1, accountingEntry );
+            addOperation( BigDecimal.valueOf( -450 ), account2, accountingEntry );
             //when
             AccountingEntry accountingEntrySaved = accountingEntryService.saveAccountingEntry( accountingEntry );
 
@@ -92,8 +93,8 @@ public class AccountingEntryServiceIT {
 
         FinancialAccount account1 = createAndGiveFinancialAccount( 456, "account_1");
         FinancialAccount account2 = createAndGiveFinancialAccount( 556, "account_2");
-        addOperation( 451, account1, accountingEntry );
-        addOperation( -450, account2, accountingEntry );
+        addOperation( BigDecimal.valueOf( 451 ), account1, accountingEntry );
+        addOperation( BigDecimal.valueOf( -450 ), account2, accountingEntry );
 
         //when //then
         assertThrows(
@@ -128,8 +129,8 @@ public class AccountingEntryServiceIT {
 
             FinancialAccount account1 = createAndGiveFinancialAccount( 456, "account_1");
             FinancialAccount account2 = createAndGiveFinancialAccount( 556, "account_2");
-            addOperation( 450, account1, accountingEntry );
-            addOperation( -450, account2, accountingEntry );
+            addOperation( BigDecimal.valueOf( 450 ), account1, accountingEntry );
+            addOperation( BigDecimal.valueOf( -450 ), account2, accountingEntry );
 
             AccountingEntry accountingEntrySaved = accountingEntryService.saveAccountingEntry( accountingEntry );
 
@@ -159,8 +160,8 @@ public class AccountingEntryServiceIT {
             accountingEntries.forEach( ae -> {
                 FinancialAccount account1 = createAndGiveFinancialAccount( 456, "account_1");
                 FinancialAccount account2 = createAndGiveFinancialAccount( 556, "account_2");
-                addOperation( 450, account1, ae );
-                addOperation( -450, account2, ae );
+                addOperation( BigDecimal.valueOf( 450 ), account1, ae );
+                addOperation( BigDecimal.valueOf(-450 ), account2, ae );
 
                 accountingEntryService.saveAccountingEntry( ae );
             } );
@@ -187,8 +188,8 @@ public class AccountingEntryServiceIT {
             );
             FinancialAccount account1 = createAndGiveFinancialAccount( 456, "account_1");
             FinancialAccount account2 = createAndGiveFinancialAccount( 556, "account_2");
-            addOperation( 450, account1, accountingEntry );
-            addOperation( -450, account2, accountingEntry );
+            addOperation( BigDecimal.valueOf( 450 ), account1, accountingEntry );
+            addOperation( BigDecimal.valueOf( -450 ), account2, accountingEntry );
 
             AccountingEntry accountingEntrySaved = accountingEntryService.saveAccountingEntry( accountingEntry );
 
@@ -221,7 +222,7 @@ public class AccountingEntryServiceIT {
         return accountingBookService.saveAccountingBook( book );
     }
 
-    private void addOperation(int amount, FinancialAccount account, AccountingEntry entry ){
+    private void addOperation(BigDecimal amount, FinancialAccount account, AccountingEntry entry ){
         Operation operation = new Operation();
         operation.setAmount( amount );
         operation.setFinancialAccount( account );
