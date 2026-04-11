@@ -55,7 +55,7 @@ public class AccountingBookValidatorITest {
             violations = validator.validate( accountingBook );
 
             if( violations.size() == 1 ){
-                violations.forEach( c -> assertThat( c.getMessage() ).isEqualTo( "Name is mandatory") );
+                violations.forEach( c -> assertThat( c.getMessage() ).isEqualTo( "Name for accountingBook is mandatory") );
             } else {
                 fail( "ConstraintViolationException expected not throwing" );
             }

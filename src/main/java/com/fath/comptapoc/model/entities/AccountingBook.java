@@ -15,7 +15,7 @@ public class AccountingBook {
     @GeneratedValue
     private Long id;
 
-    @NotBlank(message = "Name is mandatory")
+    @NotBlank(message = "Name for accountingBook is mandatory")
     private String name;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "accountingBook", orphanRemoval = true)
