@@ -111,6 +111,43 @@ public class AccountingEntryValidatorITest {
     }
 
     @Test
+    public void accountingEntryWithOperationWithBadFractionalNumber_thenConstraintViolation() {
+        try{
+            AccountingEntry accountingEntry = new AccountingEntry();
+            accountingEntry.setLabel( "testLabel" );
+            accountingEntry.setDate( LocalDateTime.now() );
+            accountingEntry.setAccountingBook( accountingBook );
+
+            FinancialAccount financialAccount = new FinancialAccount();
+            financialAccount.setCode( 444 );
+            financialAccount.setName( "account_name" );
+
+            Operation operation1 = new Operation();
+            operation1.setFinancialAccount( financialAccount );
+            operation1.setAmount( BigDecimal.valueOf( 450.123 ));
+            operation1.setAccountingEntry( accountingEntry );
+
+            Operation operation2 = new Operation();
+            operation2.setFinancialAccount( financialAccount );
+            operation2.setAmount( BigDecimal.valueOf( -450.123 ) );
+            operation2.setAccountingEntry( accountingEntry );
+
+            accountingEntry.getOperations().add( operation1 );
+            accountingEntry.getOperations().add( operation2 );
+
+            violations = validator.validate( accountingEntry );
+
+            if( violations.size() == 1 ){
+                violations.forEach( c -> assertThat( c.getMessage() ).isEqualTo( "The amount of this operation must have two fractional digits." ) );
+            } else {
+                fail( "ConstraintVilationException expected not throwing" );
+            }
+        } catch (Exception e ){
+            fail( e.getMessage() );
+        }
+    }
+
+    @Test
     public void accountingEntryLabelValidator_whenLabelIsNull(){
         try{
             AccountingEntry accountingEntry = new AccountingEntry();
@@ -137,7 +174,7 @@ public class AccountingEntryValidatorITest {
             violations = validator.validate( accountingEntry );
 
             if( violations.size() == 1 ){
-                violations.forEach( c -> assertThat( c.getMessage() ).isEqualTo( "Label is mandatory" ) );
+                violations.forEach( c -> assertThat( c.getMessage() ).isEqualTo( "Label for entry is mandatory" ) );
             } else {
                 fail( "ConstraintVilationException expected not throwing" );
             }
@@ -172,7 +209,7 @@ public class AccountingEntryValidatorITest {
             violations = validator.validate( accountingEntry );
 
             if( violations.size() == 1 ){
-                violations.forEach( c -> assertThat( c.getMessage() ).isEqualTo( "Date is mandatory" ) );
+                violations.forEach( c -> assertThat( c.getMessage() ).isEqualTo( "Date for entry is mandatory" ) );
             } else {
                 fail( "ConstraintVilationException expected not throwing" );
             }
@@ -182,7 +219,7 @@ public class AccountingEntryValidatorITest {
     }
 
     @Test
-    public void accountingEntryAccountingBookRelation_whenAccountingBookIsNull(){
+    public void accountingEntry_whenAccountingBookIsNull(){
         AccountingEntry accountingEntry = new AccountingEntry();
         accountingEntry.setLabel( "testLabel" );
         accountingEntry.setDate( LocalDateTime.now() );
@@ -207,7 +244,7 @@ public class AccountingEntryValidatorITest {
         violations = validator.validate( accountingEntry );
 
         if( violations.size() == 1 ){
-            violations.forEach( c -> assertThat( c.getMessage() ).isEqualTo( "AccountingBook is mandatory" ) );
+            violations.forEach( c -> assertThat( c.getMessage() ).isEqualTo( "AccountingBook for entry is mandatory" ) );
         } else {
             fail( "ConstraintVilationException expected not throwing" );
         }
