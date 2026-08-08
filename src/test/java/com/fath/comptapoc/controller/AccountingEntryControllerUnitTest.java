@@ -9,6 +9,7 @@ import com.fath.comptapoc.model.entities.AccountingBook;
 import com.fath.comptapoc.model.entities.AccountingEntry;
 import com.fath.comptapoc.services.impl.AccountingBookServiceImpl;
 import com.fath.comptapoc.services.impl.AccountingEntryServiceImpl;
+import com.fath.comptapoc.services.impl.FinancialAccountServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -42,6 +43,9 @@ public class AccountingEntryControllerUnitTest {
 
     @MockBean
     private AccountingBookServiceImpl accountingBookService;
+
+    @MockBean
+    private FinancialAccountServiceImpl financialAccountService;
 
     @Test
     public void getAccountingEntryByID_thenNotFound(){
