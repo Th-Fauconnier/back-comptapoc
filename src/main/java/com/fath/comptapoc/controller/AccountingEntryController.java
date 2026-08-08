@@ -5,6 +5,7 @@ import com.fath.comptapoc.model.dtos.PutAccountingEntryDto;
 import com.fath.comptapoc.model.entities.AccountingEntry;
 import com.fath.comptapoc.services.impl.AccountingBookServiceImpl;
 import com.fath.comptapoc.services.impl.AccountingEntryServiceImpl;
+import com.fath.comptapoc.services.impl.FinancialAccountServiceImpl;
 import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,9 @@ public class AccountingEntryController {
 
     @Autowired
     private AccountingBookServiceImpl accountingBookService;
+
+    @Autowired
+    private FinancialAccountServiceImpl financialAccountService;
 
     private final ModelMapper modelMapper;
 
@@ -68,6 +72,14 @@ public class AccountingEntryController {
 
         //check if the book existe in bdd
             accountingBookService.getAccountingBookById( accountingEntryDto.getAccountingBook().getId() );
+
+            //check for each operation if the financial account associated already exist.
+            accountingEntryDto.getOperations().forEach( operationDto -> {
+                try {
+                    financialAccountService.getFinancialAccountById( operationDto.getFinancialAccount().getId() );
+                } catch (ClassNotFoundException e) {
+                }
+            });
 
             AccountingEntry accountingEntry = accountingEntryService.saveAccountingEntry(
                     convertToEntity( accountingEntryDto )
