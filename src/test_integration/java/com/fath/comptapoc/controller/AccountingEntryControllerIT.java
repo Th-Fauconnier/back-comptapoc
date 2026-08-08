@@ -98,11 +98,24 @@ public class AccountingEntryControllerIT {
     @Test
     @Order(1)
     public void whenCreateAccountingEntry_thenIsCreated() throws Exception {
-        //give//when//then
-        createAccountingEntryAndGiveHisId(
+        //give
+            //create necessary accountingBook
+        AccountingBookDto accountingBookDto = createAndGiveAnAccountingBookDto( "test_book_name_1" );
+        AccountingEntryDto accountingEntryDto = giveAnAccountingEntryDto(
                 "test_label_1",
-                "test_book_name_1",
-                createAndGiveAFinancialAccountDto( "account_name_1", 555)
+                LocalDateTime.now(),
+                accountingBookDto
+        );
+
+            //create in database necessary financialAccounts
+        FinancialAccountDto financialAccountDto = createAndGiveAFinancialAccountDto( "account_name_1", 555);
+        FinancialAccountDto financialAccountDto2 = createAndGiveAFinancialAccountDto( "test_", 999);
+        addOperationDtoIntoEntry( 450, financialAccountDto, accountingEntryDto );
+        addOperationDtoIntoEntry( -450, financialAccountDto2, accountingEntryDto );
+
+        // when //then
+        createAccountingEntryAndGiveHisId(
+                accountingEntryDto
         );
     }
 
@@ -112,11 +125,19 @@ public class AccountingEntryControllerIT {
     public void whenGetAccountingEntryById_thenIsOk() throws Exception {
 
         //give
-        AccountingEntryDto accountingEntryDto = createAccountingEntryAndGiveHisId(
+            //create necessary accountingBook
+        AccountingBookDto accountingBookDto = createAndGiveAnAccountingBookDto( "test_book_name_2" );
+        AccountingEntryDto accountingEntryDto = giveAnAccountingEntryDto(
                 "test_label_2",
-                "test_book_name_2",
-                createAndGiveAFinancialAccountDto( "account_name_2", 555)
+                LocalDateTime.now(),
+                accountingBookDto
         );
+
+            //create in database necessary financialAccounts
+        FinancialAccountDto financialAccountDto = createAndGiveAFinancialAccountDto( "account_name_2", 555);
+        FinancialAccountDto financialAccountDto2 = createAndGiveAFinancialAccountDto( "account_name_2.2", 999);
+        addOperationDtoIntoEntry( 1500, financialAccountDto, accountingEntryDto );
+        addOperationDtoIntoEntry( -1500, financialAccountDto2, accountingEntryDto );
 
         MvcResult result = mockMvc.perform( post("/accountingEntry/create")
                 .content( new ObjectMapper().writeValueAsString( accountingEntryDto ) )
@@ -134,7 +155,7 @@ public class AccountingEntryControllerIT {
                 .andExpect( status().isOk() )
                 .andExpect( jsonPath( "$.id").value( id ) )
                 .andExpect( jsonPath("$.label").value( accountingEntryDto.getLabel() ) )
-                .andExpect( jsonPath( "$.accountingBook.name").value( accountingEntryDto.getAccountingBook().getName() ) );
+                .andExpect( jsonPath( "$.accountingBook.name").value( accountingEntryDto.getAccountingBook().getName() ));
 
     }
 
@@ -143,29 +164,36 @@ public class AccountingEntryControllerIT {
     @Transactional
     public void whenDeleteAccountingEntryById_thenIsDeleted() throws Exception {
         //give
-        AccountingEntryDto accountingEntryDto = createAccountingEntryAndGiveHisId(
-                "test_label_5",
-                "test_book_name_5",
-                createAndGiveAFinancialAccountDto( "account_name_5", 555)
-        );
-
-        //when //then
-        mockMvc.perform( delete("/accountingEntry/" + accountingEntryDto.getId() ) )
-                .andExpect( status().isOk() );
-        //then
-        mockMvc.perform( get("/accountingEntry/" + accountingEntryDto.getId() ) )
-                .andExpect( status().isNotFound() );
-    }
-
-    private AccountingEntryDto createAccountingEntryAndGiveHisId( String label, String bookName, FinancialAccountDto financialAccountDto) throws Exception {
-        AccountingBookDto accountingBookDto = createAndGiveAnAccountingBookDto( bookName );
+            //create necessary accountingBook
+        AccountingBookDto accountingBookDto = createAndGiveAnAccountingBookDto( "test_book_name_3" );
         AccountingEntryDto accountingEntryDto = giveAnAccountingEntryDto(
-                label,
+                "test_label_3",
                 LocalDateTime.now(),
                 accountingBookDto
         );
-        addOperationDtoIntoEntry( 450, financialAccountDto, accountingEntryDto );
-        addOperationDtoIntoEntry( -450, financialAccountDto, accountingEntryDto );
+
+            //create in database necessary financialAccounts
+        FinancialAccountDto financialAccountDto = createAndGiveAFinancialAccountDto( "account_name_3", 555);
+        FinancialAccountDto financialAccountDto2 = createAndGiveAFinancialAccountDto( "account_name_3.2", 999);
+        FinancialAccountDto financialAccountDto3 = createAndGiveAFinancialAccountDto( "account_name_3.3", 436);
+
+        addOperationDtoIntoEntry( 2500, financialAccountDto, accountingEntryDto );
+        addOperationDtoIntoEntry( -1500, financialAccountDto2, accountingEntryDto );
+        addOperationDtoIntoEntry( -1000, financialAccountDto3, accountingEntryDto );
+
+        //when //then
+        AccountingEntryDto accountingEntryDtoFromDatabase = createAccountingEntryAndGiveHisId(
+                accountingEntryDto
+        );
+
+        mockMvc.perform( delete("/accountingEntry/" + accountingEntryDtoFromDatabase.getId() ) )
+                .andExpect( status().isOk() );
+        //then
+        mockMvc.perform( get("/accountingEntry/" + accountingEntryDtoFromDatabase.getId() ) )
+                .andExpect( status().isNotFound() );
+    }
+
+    private AccountingEntryDto createAccountingEntryAndGiveHisId( AccountingEntryDto accountingEntryDto ) throws Exception {
 
         MvcResult result = mockMvc.perform( post("/accountingEntry/create" )
                 .content( new ObjectMapper().writeValueAsString( accountingEntryDto ) )
